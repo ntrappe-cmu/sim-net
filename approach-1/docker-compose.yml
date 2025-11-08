@@ -1,0 +1,22 @@
+services:
+  victim:
+    image: nginx
+    networks:
+      testnet:
+        ipv4_address: 10.0.0.100
+
+  attacker:
+    image: alpine
+    networks:
+      testnet:
+        ipv4_address: 10.0.0.5
+    command: sleep infinity
+    stdin_open: true
+    tty: true
+
+networks:
+  testnet:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.0.0.0/24

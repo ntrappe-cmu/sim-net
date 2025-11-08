@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  victim:
+    image: alpine:latest
+    container_name: victim
+    hostname: victim
+    networks:
+      security-lab:
+        ipv4_address: 172.20.0.10
+    command: sh -c "apk add --no-cache openssh && ssh-keygen -A && echo 'root:password' | chpasswd && /usr/sbin/sshd -D"
+    stdin_open: true
+    tty: true
+
+  attacker:
+    image: kalilinux/kali-rolling
+    container_name: attacker
+    hostname: attacker
+    networks:
+      security-lab:
+        ipv4_address: 172.20.0.100
+    command: /bin/bash
+    stdin_open: true
+    tty: true
+
+networks:
+  security-lab:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/24
+          gateway: 172.20.0.1

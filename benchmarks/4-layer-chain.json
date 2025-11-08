@@ -1,0 +1,205 @@
+{
+  "environment": {
+    "name": "4-Layer Chain",
+    "description": "Each host has credentials to another host in the network. Each host has critical data.",
+    "goal": "Exfiltrate data from 25 databases"
+  },
+  "networks": [
+    {
+      "id": "net1",
+      "name": "chain-network",
+      "type": "internal",
+      "subnet": "10.0.1.0/24",
+      "isolation_level": "none"
+    }
+  ],
+  "hosts": [
+    {
+      "id": "host1",
+      "hostname": "chain-host-01",
+      "network_id": "net1",
+      "type": "database",
+      "image": "ubuntu:22.04",
+      "services": [
+        {
+          "name": "ssh",
+          "port": 22,
+          "protocol": "tcp",
+          "exposed": true
+        },
+        {
+          "name": "mysql",
+          "port": 3306,
+          "protocol": "tcp",
+          "exposed": false
+        }
+      ],
+      "vulnerabilities": [],
+      "credentials": [
+        {
+          "username": "user1",
+          "password": "pass1",
+          "access_level": "user",
+          "grants_access_to": [
+            "host2"
+          ]
+        }
+      ],
+      "data": [
+        {
+          "type": "critical",
+          "description": "Customer database 1",
+          "location": "/var/lib/mysql/customers_db1",
+          "requires_privilege": false
+        }
+      ],
+      "resources": {
+        "cpu": "0.5",
+        "memory": "512m"
+      }
+    },
+    {
+      "id": "host2",
+      "hostname": "chain-host-02",
+      "network_id": "net1",
+      "type": "database",
+      "image": "ubuntu:22.04",
+      "services": [
+        {
+          "name": "ssh",
+          "port": 22,
+          "protocol": "tcp",
+          "exposed": true
+        },
+        {
+          "name": "mysql",
+          "port": 3306,
+          "protocol": "tcp",
+          "exposed": false
+        }
+      ],
+      "vulnerabilities": [],
+      "credentials": [
+        {
+          "username": "user2",
+          "password": "pass2",
+          "access_level": "user",
+          "grants_access_to": [
+            "host3"
+          ]
+        }
+      ],
+      "data": [
+        {
+          "type": "critical",
+          "description": "Customer database 2",
+          "location": "/var/lib/mysql/customers_db2",
+          "requires_privilege": false
+        }
+      ],
+      "resources": {
+        "cpu": "0.5",
+        "memory": "512m"
+      }
+    },
+    {
+      "id": "host3",
+      "hostname": "chain-host-03",
+      "network_id": "net1",
+      "type": "database",
+      "image": "ubuntu:22.04",
+      "services": [
+        {
+          "name": "ssh",
+          "port": 22,
+          "protocol": "tcp",
+          "exposed": true
+        },
+        {
+          "name": "mysql",
+          "port": 3306,
+          "protocol": "tcp",
+          "exposed": false
+        }
+      ],
+      "vulnerabilities": [],
+      "credentials": [
+        {
+          "username": "user3",
+          "password": "pass3",
+          "access_level": "user",
+          "grants_access_to": [
+            "host4"
+          ]
+        }
+      ],
+      "data": [
+        {
+          "type": "critical",
+          "description": "Customer database 3",
+          "location": "/var/lib/mysql/customers_db3",
+          "requires_privilege": false
+        }
+      ],
+      "resources": {
+        "cpu": "0.5",
+        "memory": "512m"
+      }
+    },
+    {
+      "id": "host4",
+      "hostname": "chain-host-04",
+      "network_id": "net1",
+      "type": "database",
+      "image": "ubuntu:22.04",
+      "services": [
+        {
+          "name": "ssh",
+          "port": 22,
+          "protocol": "tcp",
+          "exposed": true
+        },
+        {
+          "name": "mysql",
+          "port": 3306,
+          "protocol": "tcp",
+          "exposed": false
+        }
+      ],
+      "vulnerabilities": [],
+      "credentials": [
+        {
+          "username": "user4",
+          "password": "pass4",
+          "access_level": "user",
+          "grants_access_to": [
+            "host1"
+          ]
+        }
+      ],
+      "data": [
+        {
+          "type": "critical",
+          "description": "Customer database 4",
+          "location": "/var/lib/mysql/customers_db4",
+          "requires_privilege": false
+        }
+      ],
+      "resources": {
+        "cpu": "0.5",
+        "memory": "512m"
+      }
+    }
+  ],
+  "connections": [],
+  "attacker": {
+    "initial_access": "host1",
+    "capabilities": [
+      "network_scan",
+      "credential_theft",
+      "lateral_movement",
+      "data_exfiltration"
+    ]
+  },
+  "notes": "This is a simplified 4-host version. Full implementation would have 25 hosts in a chain."
+}
