@@ -1142,12 +1142,6 @@ Examples:
         help='Disable colored output'
     )
     
-    parser.add_argument(
-        '-v', '--verbose',
-        action='store_true',
-        help='Verbose output - show all validation steps'
-    )
-    
     args = parser.parse_args()
     
     # Disable colors if requested
