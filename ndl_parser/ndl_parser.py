@@ -480,7 +480,7 @@ class NDLValidator:
                 line_num, line,
                 f"Valid types: {', '.join(self.VOLUME_TYPES)}"
             )
-        
+            return
         self.volumes[name] = VolumeInfo(name, params['TYPE'], line_num + 1)
     
     def _validate_component(self, tokens: List[str], line_num: int, line: str):
