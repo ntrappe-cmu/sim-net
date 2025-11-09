@@ -1,0 +1,45 @@
+# Tree Topology Enterprise Network Configuration
+# Three networks: webservers, employee hosts, and databases
+# Total: 30 hosts
+
+# Topology hint
+TOPOLOGY TYPE=tree LAYERS=3
+
+# Define the three networks
+NETWORK web_net TYPE=bridge SUBNET=10.1.0.0/24 GATEWAY=10.1.0.1
+NETWORK employee_net TYPE=bridge SUBNET=10.2.0.0/24 GATEWAY=10.2.0.1
+NETWORK db_net TYPE=bridge SUBNET=10.3.0.0/24 GATEWAY=10.3.0.1
+
+# Services - distributed to total 30 hosts
+# Webservers (8 hosts)
+SERVICE webservers COUNT=8 IMAGE=nginx:alpine NETWORK=web_net IP_RANGE=10.1.0.10-10.1.0.17
+
+# Employee hosts (15 hosts)
+SERVICE employee_hosts COUNT=15 IMAGE=ubuntu:22.04 NETWORK=employee_net IP_RANGE=10.2.0.10-10.2.0.24
+
+# Database servers (7 hosts)
+SERVICE databases COUNT=7 IMAGE=mysql:8.0 NETWORK=db_net IP_RANGE=10.3.0.10-10.3.0.16 ENV=MYSQL_ROOT_PASSWORD=secure_pass
+
+# Define groups for logical organization
+GROUP web_tier MEMBERS=webservers ROLE=webserver TIER=frontend
+GROUP employee_tier MEMBERS=employee_hosts ROLE=employee TIER=backend
+GROUP data_tier MEMBERS=databases ROLE=database TIER=data
+
+# Core router connecting all three networks (tree topology root)
+ROUTER core_router NETWORKS=web_net,employee_net,db_net IMAGE=frrouting/frr:latest
+  INTERFACE eth0 NETWORK=web_net IP=10.1.0.254
+  INTERFACE eth1 NETWORK=employee_net IP=10.2.0.254
+  INTERFACE eth2 NETWORK=db_net IP=10.3.0.254
+
+# Connectivity rules following tree hierarchy
+# Employee hosts can access webservers
+ALLOW employee_net -> web_net PORTS=80,443 PROTOCOL=tcp
+
+# Employee hosts can query databases
+ALLOW employee_net -> db_net PORTS=3306 PROTOCOL=tcp
+
+# Webservers can access databases
+ALLOW web_net -> db_net PORTS=3306 PROTOCOL=tcp
+
+# Block direct database access from outside
+BLOCK web_net -> employee_net
