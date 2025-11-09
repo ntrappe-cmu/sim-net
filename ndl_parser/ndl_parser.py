@@ -512,11 +512,22 @@ class NDLValidator:
         if is_critical:
             self.critical_components.append(name)
         
+        # Validate COUNT parameter
+        count_str = params.get('COUNT', '1')
+        try:
+            count = int(count_str)
+        except ValueError:
+            self._add_error(
+                f"Invalid COUNT value for COMPONENT '{name}': {count_str}",
+                line_num, line,
+                "COUNT must be an integer. Defaulting to 1."
+            )
+            count = 1
         self.components[name] = ComponentInfo(
             name=name,
             type=params['TYPE'],
             network=params.get('NETWORK', ''),
-            count=int(params.get('COUNT', '1')),
+            count=count,
             critical=is_critical,
             line_number=line_num + 1
         )
