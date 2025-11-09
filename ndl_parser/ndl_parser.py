@@ -655,7 +655,7 @@ class NDLValidator:
                     )
         
         self.routers[name] = {
-            'networks': params.get('NETWORKS', '').split(','),
+            'networks': [n.strip() for n in params['NETWORKS'].split(',')] if 'NETWORKS' in params else [],
             'interfaces': interfaces,
             'line': line_num + 1
         }
