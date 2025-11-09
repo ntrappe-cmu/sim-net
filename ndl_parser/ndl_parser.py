@@ -345,15 +345,17 @@ class NDLValidator:
             return
         
         # Validate required parameters
+        missing_required = False
         if 'IMAGE' not in params:
             self._add_error("SERVICE requires IMAGE parameter", line_num, line,
                            "Add IMAGE=<docker_image>")
-            
+            missing_required = True
         if 'NETWORK' not in params:
             self._add_error("SERVICE requires NETWORK parameter", line_num, line,
                            "Add NETWORK=<network_name>")
+            missing_required = True
+        if missing_required:
             return
-        
         # Parse COUNT
         count = 1
         if 'COUNT' in params:
