@@ -509,6 +509,7 @@ class NDLValidator:
                 line_num, line,
                 f"Valid types: {', '.join(self.COMPONENT_TYPES)}"
             )
+            return
         
         # Track critical components
         is_critical = params.get('CRITICAL', 'false').lower() == 'true'
