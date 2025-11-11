@@ -1,0 +1,48 @@
+# Test Case 1: Valid Enterprise Network
+# This should pass ALL validations with 0 errors and 0 warnings
+# Tests: Proper order, valid IPs, all references exist, no conflicts
+
+TOPOLOGY TYPE=hierarchical LAYERS=3
+
+# Volumes defined first
+VOLUME db_data TYPE=local SIZE=100G
+VOLUME logs TYPE=bind PATH=/var/log
+
+# Networks with valid subnets
+NETWORK dmz_net TYPE=bridge SUBNET=10.1.0.0/24 GATEWAY=10.1.0.1
+NETWORK app_net TYPE=bridge SUBNET=10.2.0.0/24 GATEWAY=10.2.0.1  
+NETWORK db_net TYPE=bridge SUBNET=10.3.0.0/24 GATEWAY=10.3.0.1
+
+# Services with valid IPs and references
+SERVICE web_servers COUNT=3 IMAGE=nginx:alpine NETWORK=dmz_net IP_RANGE=10.1.0.10-10.1.0.12
+SERVICE app_servers COUNT=2 IMAGE=python:3.9 NETWORK=app_net IP_RANGE=10.2.0.10-10.2.0.11
+SERVICE database COUNT=1 IMAGE=postgres:13 NETWORK=db_net IP=10.3.0.10 VOLUMES=db_data=/var/lib/postgresql/data
+
+# Valid component
+COMPONENT monitoring TYPE=gateway NETWORK=app_net IP=10.2.0.100
+
+# Valid zones
+ZONE public TYPE=dmz NETWORKS=dmz_net TRUST_LEVEL=3
+ZONE internal TYPE=internal NETWORKS=app_net,db_net TRUST_LEVEL=8
+
+# Valid groups referencing existing services
+GROUP frontend MEMBERS=web_servers ROLE=webserver TIER=frontend
+GROUP backend MEMBERS=app_servers,database ROLE=application TIER=backend
+
+# Router with interfaces for each network
+ROUTER main_router NETWORKS=dmz_net,app_net,db_net IMAGE=frr:latest
+  INTERFACE eth0 NETWORK=dmz_net IP=10.1.0.254
+  INTERFACE eth1 NETWORK=app_net IP=10.2.0.254
+  INTERFACE eth2 NETWORK=db_net IP=10.3.0.254
+
+# Valid vulnerability and credentials
+VULN web_servers TYPE=xss SEVERITY=medium
+CREDS app_servers TARGET=database TYPE=database USERNAME=appuser
+
+# Valid access rules
+ALLOW dmz_net -> app_net PORTS=8000 PROTOCOL=tcp
+ALLOW app_net -> db_net PORTS=5432 PROTOCOL=tcp
+BLOCK dmz_net -> db_net
+
+# Valid firewall rule
+RULE app_firewall TYPE=firewall BETWEEN=dmz_net,app_net ACTION=inspect LOG=true

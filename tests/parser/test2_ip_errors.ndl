@@ -1,0 +1,30 @@
+# Test Case 2: IP Conflicts and Invalid Ranges
+# This should catch multiple IP-related errors
+# Tests: IP conflicts, IPs outside subnet, invalid ranges, gateway issues
+
+NETWORK prod_net TYPE=bridge SUBNET=10.1.0.0/24 GATEWAY=10.2.0.1
+NETWORK test_net TYPE=bridge SUBNET=10.2.0.0/24 GATEWAY=10.2.0.300
+NETWORK dev_net TYPE=bridge SUBNET=10.3.0.0/24
+
+# IP conflict - same IP used twice
+SERVICE web1 COUNT=1 IMAGE=nginx NETWORK=prod_net IP=10.1.0.10
+SERVICE web2 COUNT=1 IMAGE=apache NETWORK=prod_net IP=10.1.0.10
+
+# IP outside subnet range
+SERVICE app1 COUNT=1 IMAGE=node NETWORK=test_net IP=10.3.0.50
+
+# IP range with start > end
+SERVICE db_cluster COUNT=5 IMAGE=mysql NETWORK=dev_net IP_RANGE=10.3.0.20-10.3.0.15
+
+# IP range with insufficient IPs for COUNT
+SERVICE workers COUNT=10 IMAGE=python NETWORK=dev_net IP_RANGE=10.3.0.30-10.3.0.35
+
+# IP range outside subnet
+SERVICE external COUNT=3 IMAGE=redis NETWORK=prod_net IP_RANGE=10.2.0.10-10.2.0.12
+
+# Component with IP conflict (reuses web1's IP)
+COMPONENT monitor TYPE=gateway NETWORK=prod_net IP=10.1.0.10
+
+# Overlapping subnets with same type
+NETWORK overlap1 TYPE=bridge SUBNET=10.1.0.0/24
+NETWORK overlap2 TYPE=bridge SUBNET=10.1.0.0/25

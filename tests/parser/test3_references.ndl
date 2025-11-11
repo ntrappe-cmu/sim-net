@@ -1,0 +1,48 @@
+# Test Case 3: Undefined References and Declaration Order
+# This should catch reference errors and order warnings
+# Tests: Forward references, undefined networks/services/volumes, out-of-order declarations
+
+# Service before network (wrong order + undefined network)
+SERVICE early_service COUNT=1 IMAGE=nginx NETWORK=undefined_net
+
+# Valid network but declared late
+NETWORK main_net TYPE=bridge SUBNET=10.1.0.0/24
+
+# Service referencing undefined volume
+SERVICE db COUNT=1 IMAGE=postgres NETWORK=main_net VOLUMES=undefined_volume=/data
+
+# Component referencing undefined network
+COMPONENT sensor TYPE=sensor NETWORK=missing_net COUNT=5
+
+# Zone referencing mix of defined and undefined networks
+ZONE mixed_zone TYPE=internal NETWORKS=main_net,fake_net1,fake_net2
+
+# Group referencing undefined members
+GROUP broken_group MEMBERS=early_service,fake_service,ghost_service ROLE=webserver
+
+# Router with undefined networks
+ROUTER bad_router NETWORKS=main_net,phantom_net IMAGE=frr:latest
+  INTERFACE eth0 NETWORK=main_net IP=10.1.0.254
+  INTERFACE eth1 NETWORK=phantom_net IP=192.168.1.1
+
+# VULN targeting undefined service
+VULN nonexistent_service TYPE=rce SEVERITY=critical
+
+# CREDS with undefined source and target
+CREDS fake_source TARGET=fake_target TYPE=ssh
+
+# CHAIN with undefined services in path
+CHAIN attack_path PATH=attacker->victim->target TYPE=lateral_movement
+
+# Late volume declaration (out of order)
+VOLUME late_volume TYPE=local
+
+# Another network declared after SERVICE (out of order)
+NETWORK late_net TYPE=bridge SUBNET=10.2.0.0/24
+
+# ALLOW/BLOCK with undefined networks
+ALLOW undefined_net1 -> undefined_net2 PORTS=443
+BLOCK ghost_net -> main_net
+
+# Late service (out of order)
+SERVICE late_service COUNT=1 IMAGE=redis NETWORK=late_net
