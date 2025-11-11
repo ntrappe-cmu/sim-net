@@ -1,0 +1,56 @@
+# Test Case 4: Invalid Parameters and Security Warnings
+# This should catch invalid parameter values and security concerns
+# Tests: Invalid types, invalid protocols, bad parameters, OT/IT mixing, critical components
+
+# Network with invalid type
+NETWORK bad_type_net TYPE=invalid_driver SUBNET=10.1.0.0/24
+
+# Network with invalid SUBNET format
+NETWORK bad_subnet TYPE=bridge SUBNET=10.1.0.256/33
+
+# Valid networks for security testing
+NETWORK ot_net TYPE=bridge SUBNET=192.168.1.0/24
+NETWORK it_net TYPE=bridge SUBNET=192.168.2.0/24
+NETWORK dmz_net TYPE=bridge SUBNET=192.168.3.0/24
+
+# Volume with invalid type
+VOLUME bad_vol TYPE=invalid_type SIZE=50G
+
+# Service with non-numeric COUNT and missing IMAGE
+SERVICE broken COUNT=abc NETWORK=ot_net
+
+# Component with invalid type and non-numeric COUNT
+COMPONENT bad_plc TYPE=invalid_component NETWORK=ot_net COUNT=xyz CRITICAL=true
+
+# Zone with invalid type
+ZONE bad_zone TYPE=invalid_zone_type NETWORKS=ot_net
+
+# Valid OT and IT zones for security testing
+ZONE ot_zone TYPE=ot NETWORKS=ot_net TRUST_LEVEL=9
+ZONE it_zone TYPE=it NETWORKS=it_net TRUST_LEVEL=5
+
+# Router directly connecting OT and IT (should trigger warning)
+ROUTER insecure_router NETWORKS=ot_net,it_net IMAGE=frr:latest
+  INTERFACE eth0 NETWORK=ot_net IP=192.168.1.254
+  INTERFACE eth1 NETWORK=it_net IP=192.168.2.254
+
+# Critical component without firewall protection (should trigger warning)
+COMPONENT critical_plc TYPE=plc NETWORK=ot_net CRITICAL=true
+
+# VULN with invalid type and severity
+VULN broken COUNT=1 TYPE=invalid_vuln_type SEVERITY=extreme
+
+# CREDS with invalid auth type
+CREDS admin TARGET=critical_plc TYPE=invalid_auth USERNAME=root
+
+# ALLOW with invalid protocol
+ALLOW ot_net -> it_net PORTS=443 PROTOCOL=invalid_protocol
+
+# BLOCK with malformed statement (missing arrow)
+BLOCK ot_net it_net
+
+# RULE with invalid type
+RULE bad_rule TYPE=invalid_rule_type BETWEEN=ot_net,it_net
+
+# Direct ALLOW between OT and IT (security concern)
+ALLOW ot_net -> it_net PORTS=445 PROTOCOL=tcp
