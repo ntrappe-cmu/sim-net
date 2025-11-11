@@ -559,6 +559,7 @@ class NDLValidator:
                 line_num, line,
                 f"Valid types: {', '.join(self.ZONE_TYPES)}"
             )
+            return
         
         # Track OT/IT zones
         networks = [n.strip() for n in params['NETWORKS'].split(',')]
