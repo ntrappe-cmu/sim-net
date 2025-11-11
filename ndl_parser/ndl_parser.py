@@ -286,6 +286,7 @@ class NDLValidator:
                 line_num, line,
                 f"Valid types: {', '.join(self.NETWORK_TYPES)}"
             )
+            return
         
         # Validate SUBNET format
         try:
@@ -309,12 +310,14 @@ class NDLValidator:
                         line_num, line,
                         f"Gateway must be within {subnet.network_address+1} - {subnet.broadcast_address-1}"
                     )
+                    return
             except ValueError:
                 self._add_error(
                     f"Invalid GATEWAY IP: {params['GATEWAY']}",
                     line_num, line,
                     "Use valid IPv4 address (e.g., 10.1.0.1)"
                 )
+                return
         
         # Store network info
         self.networks[name] = NetworkInfo(
