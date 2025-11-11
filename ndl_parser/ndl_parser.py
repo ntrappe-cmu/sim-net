@@ -667,24 +667,24 @@ class NDLValidator:
         
         return skip_lines
     
-    def _validate_allow(self, tokens: List[str], line_num: int, line: str):
-        """Validate ALLOW statement"""
+    def _validate_allow_block_common(self, tokens: List[str], line_num: int, line: str, statement_type: str):
+        """Common validation logic for ALLOW and BLOCK statements"""
         if '->' not in tokens:
             self._add_error(
-                "ALLOW requires arrow (->)",
+                f"{statement_type} requires arrow (->)",
                 line_num, line,
-                "Format: ALLOW <source> -> <destination> [params]"
+                f"Format: {statement_type} <source> -> <destination> [params]"
             )
             return
         
         arrow_idx = tokens.index('->')
         
         if arrow_idx < 2:
-            self._add_error("ALLOW requires source before ->", line_num, line)
+            self._add_error(f"{statement_type} requires source before ->", line_num, line)
             return
         
         if arrow_idx >= len(tokens) - 1:
-            self._add_error("ALLOW requires destination after ->", line_num, line)
+            self._add_error(f"{statement_type} requires destination after ->", line_num, line)
             return
         
         # Check PROTOCOL if specified
@@ -696,18 +696,13 @@ class NDLValidator:
                 f"Valid protocols: {', '.join(self.PROTOCOLS)}"
             )
     
+    def _validate_allow(self, tokens: List[str], line_num: int, line: str):
+        """Validate ALLOW statement"""
+        self._validate_allow_block_common(tokens, line_num, line, "ALLOW")
+    
     def _validate_block(self, tokens: List[str], line_num: int, line: str):
         """Validate BLOCK statement"""
-        if '->' not in tokens:
-            self._add_error(
-                "BLOCK requires arrow (->)",
-                line_num, line,
-                "Format: BLOCK <source> -> <destination> [params]"
-            )
-            return
-        
-        # Same validation as ALLOW
-        self._validate_allow(tokens, line_num, line)
+        self._validate_allow_block_common(tokens, line_num, line, "BLOCK")
     
     def _validate_vuln(self, tokens: List[str], line_num: int, line: str):
         """Validate VULN statement"""
