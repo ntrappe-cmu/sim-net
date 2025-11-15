@@ -1,0 +1,6 @@
+NETWORK web_net TYPE=bridge SUBNET=10.1.0.0/24
+
+SERVICE web COUNT=3 IMAGE=nginx:alpine NETWORK=web_net IP_RANGE=10.1.0.10-10.1.0.12
+SERVICE cache COUNT=1 IMAGE=redis:6 NETWORK=web_net IP=10.1.0.20
+
+GROUP frontend MEMBERS=web,cache ROLE=webserver TIER=frontend
