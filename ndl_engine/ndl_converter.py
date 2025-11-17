@@ -308,6 +308,10 @@ class NDLConverter:
         self.parser = NDLParser()
         self._current_router = None  # Track router being parsed
     
+    def _parse_bool(self, params: Dict[str, str], key: str, default: bool = False) -> bool:
+        """Helper method to consistently parse boolean parameters"""
+        return params.get(key, str(default).lower()).lower() == 'true'
+    
     def convert_file(self, filepath: str) -> IntermediateRepresentation:
         """Convert NDL file to intermediate representation"""
         with open(filepath, 'r') as f:
@@ -495,7 +499,7 @@ class NDLConverter:
             'network': params['NETWORK'],
             'ip': params.get('IP'),
             'ip_range': params.get('IP_RANGE'),
-            'critical': params.get('CRITICAL', 'false').lower() == 'true',
+            'critical': self._parse_bool(params, 'CRITICAL', False),
             'vendor': params.get('VENDOR'),
             'model': params.get('MODEL'),
             'image': params.get('IMAGE')
@@ -619,7 +623,7 @@ class NDLConverter:
             type=params['TYPE'],
             username=params.get('USERNAME', 'admin'),
             strength=params.get('STRENGTH'),
-            shared=params.get('SHARED', 'false').lower() == 'true'
+            shared=self._parse_bool(params, 'SHARED', False)
         )
         
         self.ir.credentials.append(cred)
@@ -659,7 +663,7 @@ class NDLConverter:
             destination=destination,
             ports=self.parser.parse_comma_list(params.get('PORTS', '')),
             protocol=params.get('PROTOCOL', 'tcp'),
-            bidirectional=params.get('BIDIRECTIONAL', 'false').lower() == 'true'
+            bidirectional=self._parse_bool(params, 'BIDIRECTIONAL', False)
         )
         
         self.ir.rules.append(rule)
@@ -698,7 +702,7 @@ class NDLConverter:
             rule_type=params['TYPE'],
             between=self.parser.parse_comma_list(params['BETWEEN']),
             action=params.get('ACTION'),
-            log=params.get('LOG', 'false').lower() == 'true'
+            log=self._parse_bool(params, 'LOG', False)
         )
         
         self.ir.rules.append(rule)
