@@ -1,4 +1,4 @@
-# Test NDL file to verify ENV parsing with = separator
+# Test NDL file to verify ENV parsing of multiple variables and values with special characters or nested '=' signs
 NETWORK test_net TYPE=bridge SUBNET=10.1.0.0/24
 
 # Test service with ENV using = separator
