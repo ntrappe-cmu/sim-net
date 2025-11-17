@@ -830,11 +830,25 @@ class NDLConverter:
         start = IPv4Address(start_ip)
         end = IPv4Address(end_ip)
         
+        # Validate that start <= end
+        if start > end:
+            raise ValueError(
+                f"Invalid IP_RANGE {start_ip}-{end_ip}: start IP must be less than or equal to end IP"
+            )
+        
+        # Calculate available IPs in range
+        available_ips = int(end) - int(start) + 1
+        
+        # Raise error if count exceeds available IPs
+        if count > available_ips:
+            raise ValueError(
+                f"IP_RANGE {start_ip}-{end_ip} has only {available_ips} IP(s) "
+                f"but COUNT={count} requires {count} IP(s)"
+            )
+        
         ips = []
         current = start
         for _ in range(count):
-            if current > end:
-                break
             ips.append(str(current))
             current = IPv4Address(int(current) + 1)
         
