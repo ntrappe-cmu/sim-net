@@ -411,16 +411,26 @@ class NDLValidator:
                             "Start IP must be <= end IP"
                         )
                     else:
-                        ip_range = (start_ip, end_ip)
-                        
-                        # Check if range has enough IPs
-                        ip_count = int(end_ip) - int(start_ip) + 1
-                        if ip_count < count:
+                        # Check if start and end IPs are in the same /24 subnet
+                        start_network = ipaddress.IPv4Network(f"{start_ip}/24", strict=False)
+                        end_network = ipaddress.IPv4Network(f"{end_ip}/24", strict=False)
+                        if start_network.network_address != end_network.network_address:
                             self._add_error(
-                                f"IP_RANGE has {ip_count} IPs but COUNT={count}",
+                                f"IP_RANGE start ({start_ip}) and end ({end_ip}) are not in the same /24 subnet",
                                 line_num, line,
-                                f"Expand range to include at least {count} IPs"
+                                "Use an IP range within a single /24 subnet (e.g., 10.1.0.10-10.1.0.20)"
                             )
+                        else:
+                            ip_range = (start_ip, end_ip)
+                            
+                            # Check if range has enough IPs
+                            ip_count = int(end_ip) - int(start_ip) + 1
+                            if ip_count < count:
+                                self._add_error(
+                                    f"IP_RANGE has {ip_count} IPs but COUNT={count}",
+                                    line_num, line,
+                                    f"Expand range to include at least {count} IPs"
+                                )
                 except ValueError as e:
                     self._add_error(f"Invalid IP in range: {e}", line_num, line)
             else:
