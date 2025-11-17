@@ -1,0 +1,14 @@
+VOLUME shared_logs TYPE=local SIZE=10G
+
+NETWORK control_net TYPE=bridge SUBNET=192.168.1.0/24
+NETWORK field_net TYPE=bridge SUBNET=192.168.2.0/24
+
+SERVICE historian COUNT=1 IMAGE=timescaledb NETWORK=control_net IP=192.168.1.10 VOLUMES=shared_logs=/var/log
+
+SERVICE db_cluster COUNT=3 IMAGE=mysql:8 NETWORK=control_net IP_RANGE=192.168.1.20-192.168.1.22 VOLUME_PATTERN=db_{instance}=/var/lib/mysql
+
+COMPONENT plc COUNT=5 TYPE=plc NETWORK=field_net IP_RANGE=192.168.2.10-192.168.2.14 VENDOR=Siemens CRITICAL=true
+
+COMPONENT hmi COUNT=1 TYPE=hmi NETWORK=control_net IP=192.168.1.100 CRITICAL=true
+
+ZONE ot_zone TYPE=ot NETWORKS=control_net,field_net
