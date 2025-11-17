@@ -6,8 +6,8 @@ for Docker Compose generation and validation.
 """
 
 from dataclasses import dataclass, field
-from typing import List, Dict, Optional, Set, Any
-from ipaddress import ip_network
+from typing import List, Dict, Optional, Set, Any, Tuple
+from ipaddress import ip_network, IPv4Address, ip_address
 import re
 
 
@@ -274,7 +274,7 @@ class NDLParser:
         return [s.strip() for s in path_string.split('->')]
     
     @staticmethod
-    def parse_ip_range(ip_range_string: str) -> tuple[str, str]:
+    def parse_ip_range(ip_range_string: str) -> Tuple[str, str]:
         """Parse 10.1.0.10-10.1.0.20 into (start, end)"""
         parts = ip_range_string.split('-')
         return parts[0].strip(), parts[1].strip()
@@ -307,6 +307,10 @@ class NDLConverter:
         self.ir = IntermediateRepresentation()
         self.parser = NDLParser()
         self._current_router = None  # Track router being parsed
+    
+    def _parse_bool(self, params: Dict[str, str], key: str, default: bool = False) -> bool:
+        """Helper method to consistently parse boolean parameters"""
+        return params.get(key, str(default).lower()).lower() == 'true'
     
     def convert_file(self, filepath: str) -> IntermediateRepresentation:
         """Convert NDL file to intermediate representation"""
@@ -495,7 +499,7 @@ class NDLConverter:
             'network': params['NETWORK'],
             'ip': params.get('IP'),
             'ip_range': params.get('IP_RANGE'),
-            'critical': params.get('CRITICAL', 'false').lower() == 'true',
+            'critical': self._parse_bool(params, 'CRITICAL', False),
             'vendor': params.get('VENDOR'),
             'model': params.get('MODEL'),
             'image': params.get('IMAGE')
@@ -619,7 +623,7 @@ class NDLConverter:
             type=params['TYPE'],
             username=params.get('USERNAME', 'admin'),
             strength=params.get('STRENGTH'),
-            shared=params.get('SHARED', 'false').lower() == 'true'
+            shared=self._parse_bool(params, 'SHARED', False)
         )
         
         self.ir.credentials.append(cred)
@@ -659,7 +663,7 @@ class NDLConverter:
             destination=destination,
             ports=self.parser.parse_comma_list(params.get('PORTS', '')),
             protocol=params.get('PROTOCOL', 'tcp'),
-            bidirectional=params.get('BIDIRECTIONAL', 'false').lower() == 'true'
+            bidirectional=self._parse_bool(params, 'BIDIRECTIONAL', False)
         )
         
         self.ir.rules.append(rule)
@@ -698,7 +702,7 @@ class NDLConverter:
             rule_type=params['TYPE'],
             between=self.parser.parse_comma_list(params['BETWEEN']),
             action=params.get('ACTION'),
-            log=params.get('LOG', 'false').lower() == 'true'
+            log=self._parse_bool(params, 'LOG', False)
         )
         
         self.ir.rules.append(rule)
@@ -720,12 +724,32 @@ class NDLConverter:
         count = svc_def['count']
         base_name = svc_def['name']
         
+        # Get network object for validation
+        network_obj = self.ir._network_map.get(svc_def['network'])
+        if not network_obj:
+            raise ValueError(f"Network '{svc_def['network']}' not found for service '{base_name}'")
+        
+        subnet = ip_network(network_obj.subnet, strict=False)
+        
         # Allocate IPs if needed
         ips = []
         if svc_def['ip_range']:
             start_ip, end_ip = self.parser.parse_ip_range(svc_def['ip_range'])
-            ips = self._generate_ip_range(start_ip, end_ip, count)
+            all_ips = self._generate_ip_range(start_ip, end_ip, count)
+            
+            # Validate that all IPs are within subnet
+            for ip_str in all_ips:
+                if ip_address(ip_str) not in subnet:
+                    raise ValueError(
+                        f"IP {ip_str} for service '{base_name}' is not within subnet {subnet}"
+                    )
+            ips = all_ips
         elif svc_def['ip']:
+            # Validate single IP is within subnet
+            if ip_address(svc_def['ip']) not in subnet:
+                raise ValueError(
+                    f"IP {svc_def['ip']} for service '{base_name}' is not within subnet {subnet}"
+                )
             ips = [svc_def['ip']]
         
         # Track instances
@@ -785,12 +809,32 @@ class NDLConverter:
         count = comp_def['count']
         base_name = comp_def['name']
         
+        # Get network object for validation
+        network_obj = self.ir._network_map.get(comp_def['network'])
+        if not network_obj:
+            raise ValueError(f"Network '{comp_def['network']}' not found for component '{base_name}'")
+        
+        subnet = ip_network(network_obj.subnet, strict=False)
+        
         # Allocate IPs if needed
         ips = []
         if comp_def['ip_range']:
             start_ip, end_ip = self.parser.parse_ip_range(comp_def['ip_range'])
-            ips = self._generate_ip_range(start_ip, end_ip, count)
+            all_ips = self._generate_ip_range(start_ip, end_ip, count)
+            
+            # Validate that all IPs are within subnet
+            for ip_str in all_ips:
+                if ip_address(ip_str) not in subnet:
+                    raise ValueError(
+                        f"IP {ip_str} for component '{base_name}' is not within subnet {subnet}"
+                    )
+            ips = all_ips
         elif comp_def['ip']:
+            # Validate single IP is within subnet
+            if ip_address(comp_def['ip']) not in subnet:
+                raise ValueError(
+                    f"IP {comp_def['ip']} for component '{base_name}' is not within subnet {subnet}"
+                )
             ips = [comp_def['ip']]
         
         # Track instances
