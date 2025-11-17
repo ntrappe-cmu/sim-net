@@ -576,8 +576,9 @@ class NDLConverter:
                 router.interfaces.append(interface)
                 
                 # Reserve router interface IP
-                if iface_params['NETWORK'] in self.ir._allocated_ips:
-                    self.ir._allocated_ips[iface_params['NETWORK']].add(iface_params['IP'])
+                if iface_params['NETWORK'] not in self.ir._allocated_ips:
+                    self.ir._allocated_ips[iface_params['NETWORK']] = set()
+                self.ir._allocated_ips[iface_params['NETWORK']].add(iface_params['IP'])
                 
                 i += 1
             else:
