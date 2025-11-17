@@ -864,7 +864,6 @@ class NDLConverter:
 
 if __name__ == "__main__":
     import sys
-    import json
     
     if len(sys.argv) < 2:
         print("Usage: python ndl_converter.py <ndl_file>")
