@@ -1,0 +1,8 @@
+# Test NDL file to verify ENV parsing with = separator
+NETWORK test_net TYPE=bridge SUBNET=10.1.0.0/24
+
+# Test service with ENV using = separator
+SERVICE test_app COUNT=1 IMAGE=node:16 NETWORK=test_net IP=10.1.0.10 ENV=NODE_ENV=production,PORT=3000,DB_HOST=localhost
+
+# Test service with multiple ENV variables
+SERVICE database COUNT=1 IMAGE=postgres:13 NETWORK=test_net IP=10.1.0.20 ENV=POSTGRES_PASSWORD=secret123,POSTGRES_DB=myapp,POSTGRES_USER=admin
