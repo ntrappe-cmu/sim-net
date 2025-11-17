@@ -3,7 +3,7 @@ VOLUME shared_logs TYPE=local SIZE=10G
 NETWORK control_net TYPE=bridge SUBNET=192.168.1.0/24
 NETWORK field_net TYPE=bridge SUBNET=192.168.2.0/24
 
-SERVICE historian COUNT=1 IMAGE=timescaledb NETWORK=control_net IP=192.168.1.10 VOLUME=shared_logs
+SERVICE historian COUNT=1 IMAGE=timescaledb NETWORK=control_net IP=192.168.1.10 VOLUMES=shared_logs=/var/log
 
 SERVICE db_cluster COUNT=3 IMAGE=mysql:8 NETWORK=control_net IP_RANGE=192.168.1.20-192.168.1.22 VOLUME_PATTERN=db_{instance}=/var/lib/mysql
 
