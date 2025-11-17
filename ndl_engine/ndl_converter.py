@@ -445,7 +445,7 @@ class NDLConverter:
         ip = params.get('IP')
         ip_range = params.get('IP_RANGE')
         ports = self.parser.parse_comma_list(params.get('PORTS', ''))
-        # ENV format: ENV=KEY1=value1,KEY2=value2 (using '=' as separator)
+        # ENV format: ENV=KEY1=value1,KEY2=value2 (comma-separated key=value pairs)
         env = self.parser.parse_key_value_list(params.get('ENV', ''))
         
         # Handle volumes
