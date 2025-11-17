@@ -748,6 +748,8 @@ class NDLConverter:
                 pattern = svc_def['volume_pattern']
                 if '=' in pattern:
                     vol_pattern, mount_path = pattern.split('=', 1)
+                    if '{instance}' not in vol_pattern:
+                        raise ValueError(f"VOLUME_PATTERN must contain '{{instance}}' placeholder for service '{base_name}' (got: '{pattern}')")
                     vol_name = vol_pattern.replace('{instance}', str(i+1))
                     volumes.append(VolumeMount(volume=vol_name, path=mount_path))
                     
