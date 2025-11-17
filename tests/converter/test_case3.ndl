@@ -6,8 +6,8 @@ NETWORK app TYPE=bridge SUBNET=10.2.0.0/24 GATEWAY=10.2.0.1
 NETWORK db TYPE=bridge SUBNET=10.3.0.0/24 GATEWAY=10.3.0.1
 
 SERVICE web COUNT=2 IMAGE=nginx NETWORK=dmz IP_RANGE=10.1.0.10-10.1.0.11 PORTS=80,443
-SERVICE api COUNT=3 IMAGE=fastapi NETWORK=app IP_RANGE=10.2.0.10-10.2.0.12 ENV=DEBUG:true,MAX_WORKERS:4
-SERVICE database COUNT=1 IMAGE=postgres:14 NETWORK=db IP=10.3.0.10 VOLUMES=app_data=/var/lib/postgresql,app_logs=/logs ENV=POSTGRES_USER:admin,POSTGRES_PASSWORD:secret123
+SERVICE api COUNT=3 IMAGE=fastapi NETWORK=app IP_RANGE=10.2.0.10-10.2.0.12 ENV=DEBUG=true,MAX_WORKERS=4
+SERVICE database COUNT=1 IMAGE=postgres:14 NETWORK=db IP=10.3.0.10 VOLUMES=app_data=/var/lib/postgresql,app_logs=/logs ENV=POSTGRES_USER=admin,POSTGRES_PASSWORD=secret123
 
 GROUP app_tier MEMBERS=api ROLE=application TIER=backend
 GROUP data_tier MEMBERS=database ROLE=database TIER=data
