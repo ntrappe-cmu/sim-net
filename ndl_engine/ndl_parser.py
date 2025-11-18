@@ -242,6 +242,35 @@ class NDLValidator:
                         f"Port must be a number, got: {port_spec}",
                         line_num, line
                     )
+    
+    def _validate_name(self, name: str, entity_type: str, line_num: int, line: str) -> bool:
+        """Validate that a name is not empty and contains valid characters"""
+        if not name or not name.strip():
+            self._add_error(
+                f"{entity_type} name cannot be empty",
+                line_num, line,
+                f"Provide a valid name for {entity_type}"
+            )
+            return False
+        
+        # Check for invalid characters (only allow alphanumeric, underscore, hyphen)
+        if not re.match(r'^[a-zA-Z0-9_-]+$', name):
+            self._add_error(
+                f"Invalid {entity_type} name: '{name}'. Only alphanumeric characters, underscore, and hyphen allowed",
+                line_num, line,
+                f"Use only letters, numbers, underscore, and hyphen in {entity_type} names"
+            )
+            return False
+        
+        # Name should not start with a number (common convention)
+        if name[0].isdigit():
+            self._add_warning(
+                f"{entity_type} name '{name}' starts with a number",
+                line_num, line,
+                f"Consider starting {entity_type} names with a letter"
+            )
+        
+        return True
         
     def validate(self, text: str) -> Tuple[List[ValidationError], List[ValidationError]]:
         """
@@ -360,6 +389,10 @@ class NDLValidator:
         
         name = tokens[1]
         
+        # Validate name format
+        if not self._validate_name(name, "NETWORK", line_num, line):
+            return
+        
         # Check for duplicate
         if name in self.networks:
             self._add_error(
@@ -439,6 +472,11 @@ class NDLValidator:
             return
         
         name = tokens[1]
+        
+        # Validate name format
+        if not self._validate_name(name, "SERVICE", line_num, line):
+            return
+        
         params = self._extract_params(tokens[2:])
         
         # Check for duplicate
@@ -553,6 +591,10 @@ class NDLValidator:
         
         name = tokens[1]
         
+        # Validate name format
+        if not self._validate_name(name, "VOLUME", line_num, line):
+            return
+        
         if name in self.volumes:
             self._add_error(f"Duplicate volume name: {name}", line_num, line)
             return
@@ -580,6 +622,11 @@ class NDLValidator:
             return
         
         name = tokens[1]
+        
+        # Validate name format
+        if not self._validate_name(name, "COMPONENT", line_num, line):
+            return
+        
         params = self._extract_params(tokens[2:])
         
         if 'TYPE' not in params:
@@ -624,6 +671,11 @@ class NDLValidator:
             return
         
         name = tokens[1]
+        
+        # Validate name format
+        if not self._validate_name(name, "ZONE", line_num, line):
+            return
+        
         params = self._extract_params(tokens[2:])
         
         if 'TYPE' not in params:
@@ -662,6 +714,11 @@ class NDLValidator:
             return
         
         name = tokens[1]
+        
+        # Validate name format
+        if not self._validate_name(name, "GROUP", line_num, line):
+            return
+        
         params = self._extract_params(tokens[2:])
         
         if 'MEMBERS' not in params:
@@ -687,6 +744,11 @@ class NDLValidator:
             return 0
         
         name = tokens[1]
+        
+        # Validate name format
+        if not self._validate_name(name, "ROUTER", line_num, line):
+            return 0
+        
         params = self._extract_params(tokens[2:])
         
         if 'NETWORKS' not in params:
