@@ -415,6 +415,17 @@ class NDLValidator:
                            "Add SUBNET=<CIDR> (e.g., SUBNET=10.1.0.0/24)")
             return
         
+        # Validate parameters are not empty
+        if not params['TYPE']:
+            self._add_error("NETWORK TYPE cannot be empty", line_num, line,
+                           "Provide a valid network type")
+            return
+        
+        if not params['SUBNET']:
+            self._add_error("NETWORK SUBNET cannot be empty", line_num, line,
+                           "Provide a valid subnet in CIDR notation")
+            return
+        
         # Validate TYPE value
         if params['TYPE'] not in self.NETWORK_TYPES:
             self._add_error(
@@ -494,10 +505,20 @@ class NDLValidator:
             self._add_error("SERVICE requires IMAGE parameter", line_num, line,
                            "Add IMAGE=<docker_image>")
             missing_required = True
+        elif not params['IMAGE']:
+            self._add_error("SERVICE IMAGE cannot be empty", line_num, line,
+                           "Provide a valid Docker image name")
+            missing_required = True
+        
         if 'NETWORK' not in params:
             self._add_error("SERVICE requires NETWORK parameter", line_num, line,
                            "Add NETWORK=<network_name>")
             missing_required = True
+        elif not params['NETWORK']:
+            self._add_error("SERVICE NETWORK cannot be empty", line_num, line,
+                           "Provide a valid network name")
+            missing_required = True
+        
         if missing_required:
             return
         # Parse COUNT with validation
@@ -606,6 +627,11 @@ class NDLValidator:
                            f"Add TYPE={'/'.join(self.VOLUME_TYPES)}")
             return
         
+        if not params['TYPE']:
+            self._add_error("VOLUME TYPE cannot be empty", line_num, line,
+                           "Provide a valid volume type")
+            return
+        
         if params['TYPE'] not in self.VOLUME_TYPES:
             self._add_error(
                 f"Invalid volume TYPE: {params['TYPE']}",
@@ -633,8 +659,18 @@ class NDLValidator:
             self._add_error("COMPONENT requires TYPE parameter", line_num, line)
             return
         
+        if not params['TYPE']:
+            self._add_error("COMPONENT TYPE cannot be empty", line_num, line,
+                           "Provide a valid component type")
+            return
+        
         if 'NETWORK' not in params:
             self._add_error("COMPONENT requires NETWORK parameter", line_num, line)
+            return
+        
+        if not params['NETWORK']:
+            self._add_error("COMPONENT NETWORK cannot be empty", line_num, line,
+                           "Provide a valid network name")
             return
         
         if params['TYPE'] not in self.COMPONENT_TYPES:
