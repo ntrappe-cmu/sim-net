@@ -799,7 +799,7 @@ class NDLConverter:
                 if ip_address(ip_str) not in subnet:
                     self._add_error(f"IP {ip_str} for service '{base_name}' is not within subnet {subnet}", 
                                   "Provide valid IPs within subnet")
-                    continue
+                    return
             ips = all_ips
         elif svc_def['ip']:
             # Validate single IP is within subnet
