@@ -139,6 +139,109 @@ class NDLValidator:
         self.ot_networks: Set[str] = set()
         self.it_networks: Set[str] = set()
         self.critical_components: List[str] = []
+    
+    # ========================================================================
+    # Helper Methods for Consistent Validation
+    # ========================================================================
+    
+    def _parse_bool(self, value: str, default: bool = False) -> bool:
+        """Helper method to consistently parse boolean parameters"""
+        if not value:
+            return default
+        return value.lower() == 'true'
+    
+    def _parse_int(self, value: str, param_name: str, line_num: int, line: str, 
+                   min_val: int = None, max_val: int = None, default: int = None) -> Optional[int]:
+        """Helper method to consistently parse and validate integer parameters"""
+        if not value:
+            return default
+        
+        try:
+            int_val = int(value)
+            
+            if min_val is not None and int_val < min_val:
+                self._add_error(
+                    f"{param_name} must be >= {min_val}, got {int_val}",
+                    line_num, line
+                )
+                return default
+            
+            if max_val is not None and int_val > max_val:
+                self._add_error(
+                    f"{param_name} must be <= {max_val}, got {int_val}",
+                    line_num, line
+                )
+                return default
+            
+            return int_val
+        except ValueError:
+            self._add_error(
+                f"{param_name} must be a number, got: {value}",
+                line_num, line
+            )
+            return default
+    
+    def _validate_ports(self, ports_str: str, line_num: int, line: str):
+        """Validate port numbers or port ranges"""
+        if not ports_str:
+            return
+        
+        # Ports can be comma-separated: PORTS=80,443,8000-8080
+        port_list = [p.strip() for p in ports_str.split(',')]
+        
+        for port_spec in port_list:
+            if '-' in port_spec and not port_spec.startswith('-'):
+                # Port range
+                parts = port_spec.split('-')
+                if len(parts) != 2:
+                    self._add_error(
+                        f"Invalid port range format: {port_spec}",
+                        line_num, line,
+                        "Use format: start-end (e.g., 8000-8080)"
+                    )
+                    continue
+                
+                try:
+                    start_port = int(parts[0])
+                    end_port = int(parts[1])
+                    
+                    if start_port < 1 or start_port > 65535:
+                        self._add_error(
+                            f"Invalid port number: {start_port}. Valid range is 1-65535",
+                            line_num, line
+                        )
+                    
+                    if end_port < 1 or end_port > 65535:
+                        self._add_error(
+                            f"Invalid port number: {end_port}. Valid range is 1-65535",
+                            line_num, line
+                        )
+                    
+                    if start_port > end_port:
+                        self._add_error(
+                            f"Invalid port range: start ({start_port}) > end ({end_port})",
+                            line_num, line,
+                            "Start port must be <= end port"
+                        )
+                except ValueError:
+                    self._add_error(
+                        f"Port range must contain numbers: {port_spec}",
+                        line_num, line
+                    )
+            else:
+                # Single port
+                try:
+                    port = int(port_spec)
+                    if port < 1 or port > 65535:
+                        self._add_error(
+                            f"Invalid port number: {port}. Valid range is 1-65535",
+                            line_num, line
+                        )
+                except ValueError:
+                    self._add_error(
+                        f"Port must be a number, got: {port_spec}",
+                        line_num, line
+                    )
         
     def validate(self, text: str) -> Tuple[List[ValidationError], List[ValidationError]]:
         """
@@ -359,19 +462,10 @@ class NDLValidator:
             missing_required = True
         if missing_required:
             return
-        # Parse COUNT
-        count = 1
-        if 'COUNT' in params:
-            try:
-                count = int(params['COUNT'])
-                if count < 1:
-                    self._add_error("COUNT must be >= 1", line_num, line)
-                    count = 1
-            except ValueError:
-                self._add_error(
-                    f"COUNT must be a number, got: {params['COUNT']}",
-                    line_num, line
-                )
+        # Parse COUNT with validation
+        count = self._parse_int(params.get('COUNT', '1'), 'COUNT', line_num, line, min_val=1, default=1)
+        if count is None:
+            count = 1
         
         # Parse IP configuration
         ip = None
@@ -397,7 +491,7 @@ class NDLValidator:
                     "Use IP for single instance"
                 )
             
-            # Parse IP range
+            # Validate IP range format only (semantic validation done in converter)
             range_match = re.match(r'(\d+\.\d+\.\d+\.\d+)-(\d+\.\d+\.\d+\.\d+)', params['IP_RANGE'])
             if range_match:
                 try:
@@ -411,26 +505,9 @@ class NDLValidator:
                             "Start IP must be <= end IP"
                         )
                     else:
-                        # Check if start and end IPs are in the same /24 subnet
-                        start_network = ipaddress.IPv4Network(f"{start_ip}/24", strict=False)
-                        end_network = ipaddress.IPv4Network(f"{end_ip}/24", strict=False)
-                        if start_network.network_address != end_network.network_address:
-                            self._add_error(
-                                f"IP_RANGE start ({start_ip}) and end ({end_ip}) are not in the same /24 subnet",
-                                line_num, line,
-                                "Use an IP range within a single /24 subnet (e.g., 10.1.0.10-10.1.0.20)"
-                            )
-                        else:
-                            ip_range = (start_ip, end_ip)
-                            
-                            # Check if range has enough IPs
-                            ip_count = int(end_ip) - int(start_ip) + 1
-                            if ip_count < count:
-                                self._add_error(
-                                    f"IP_RANGE has {ip_count} IPs but COUNT={count}",
-                                    line_num, line,
-                                    f"Expand range to include at least {count} IPs"
-                                )
+                        ip_range = (start_ip, end_ip)
+                except ValueError as e:
+                    self._add_error(f"Invalid IP in range: {e}", line_num, line)
                 except ValueError as e:
                     self._add_error(f"Invalid IP in range: {e}", line_num, line)
             else:
@@ -522,21 +599,15 @@ class NDLValidator:
             return
         
         # Track critical components
-        is_critical = params.get('CRITICAL', 'false').lower() == 'true'
+        is_critical = self._parse_bool(params.get('CRITICAL', 'false'))
         if is_critical:
             self.critical_components.append(name)
         
-        # Validate COUNT parameter
-        count_str = params.get('COUNT', '1')
-        try:
-            count = int(count_str)
-        except ValueError:
-            self._add_error(
-                f"Invalid COUNT value for COMPONENT '{name}': {count_str}",
-                line_num, line,
-                "COUNT must be an integer. Defaulting to 1."
-            )
+        # Validate COUNT parameter with proper range checking
+        count = self._parse_int(params.get('COUNT', '1'), 'COUNT', line_num, line, min_val=1, default=1)
+        if count is None:
             count = 1
+        
         self.components[name] = ComponentInfo(
             name=name,
             type=params['TYPE'],
@@ -705,6 +776,10 @@ class NDLValidator:
                 line_num, line,
                 f"Valid protocols: {', '.join(self.PROTOCOLS)}"
             )
+        
+        # Validate PORTS if specified
+        if 'PORTS' in params:
+            self._validate_ports(params['PORTS'], line_num, line)
     
     def _validate_allow(self, tokens: List[str], line_num: int, line: str):
         """Validate ALLOW statement"""

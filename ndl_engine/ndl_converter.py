@@ -356,8 +356,9 @@ class NDLConverter:
         ))
     
     def _parse_bool(self, params: Dict[str, str], key: str, default: bool = False) -> bool:
-        """Helper method to consistently parse boolean parameters"""
-        return params.get(key, str(default).lower()).lower() == 'true'
+        """Helper method to consistently parse boolean parameters from a params dict"""
+        value = params.get(key, str(default).lower())
+        return value.lower() == 'true'
     
     def convert_file(self, filepath: str) -> Tuple[IntermediateRepresentation, List[ConversionError], List[ConversionError]]:
         """Convert NDL file to intermediate representation
@@ -431,10 +432,44 @@ class NDLConverter:
         """Parse TOPOLOGY statement"""
         params = self.parser.extract_params(line)
         
+        # Parse and validate LAYERS if provided (should be >= 1)
+        layers = None
+        if 'LAYERS' in params:
+            try:
+                layers = int(params['LAYERS'])
+                if layers < 1:
+                    self._add_error(
+                        f"LAYERS must be >= 1, got {layers}",
+                        "Provide a positive integer for LAYERS"
+                    )
+                    layers = None
+            except ValueError:
+                self._add_error(
+                    f"LAYERS must be a number, got: {params['LAYERS']}",
+                    "Provide a valid integer for LAYERS"
+                )
+        
+        # Parse and validate WIDTH if provided (should be >= 1)
+        width = None
+        if 'WIDTH' in params:
+            try:
+                width = int(params['WIDTH'])
+                if width < 1:
+                    self._add_error(
+                        f"WIDTH must be >= 1, got {width}",
+                        "Provide a positive integer for WIDTH"
+                    )
+                    width = None
+            except ValueError:
+                self._add_error(
+                    f"WIDTH must be a number, got: {params['WIDTH']}",
+                    "Provide a valid integer for WIDTH"
+                )
+        
         self.ir.topology = Topology(
             type=params['TYPE'],
-            layers=int(params['LAYERS']) if 'LAYERS' in params else None,
-            width=int(params['WIDTH']) if 'WIDTH' in params else None
+            layers=layers,
+            width=width
         )
     
     def _parse_network(self, line: str):
@@ -445,12 +480,29 @@ class NDLConverter:
         
         params = self.parser.extract_params(line)
         
+        # Parse and validate VLAN if provided (valid range is 1-4094)
+        vlan = None
+        if 'VLAN' in params:
+            try:
+                vlan = int(params['VLAN'])
+                if vlan < 1 or vlan > 4094:
+                    self._add_error(
+                        f"Invalid VLAN ID: {vlan}. Valid range is 1-4094",
+                        "Use a VLAN ID between 1 and 4094"
+                    )
+                    vlan = None
+            except ValueError:
+                self._add_error(
+                    f"VLAN must be a number, got: {params['VLAN']}",
+                    "Provide a valid integer for VLAN"
+                )
+        
         network = Network(
             name=name,
             type=params['TYPE'],
             subnet=params['SUBNET'],
             gateway=params.get('GATEWAY'),
-            vlan=int(params['VLAN']) if 'VLAN' in params else None,
+            vlan=vlan,
             dns=self.parser.parse_comma_list(params.get('DNS', ''))
         )
         
@@ -490,7 +542,22 @@ class NDLConverter:
         params = self.parser.extract_params(line)
         
         # Store raw service definition for expansion
-        count = int(params.get('COUNT', '1'))
+        # Parse and validate COUNT parameter
+        try:
+            count = int(params.get('COUNT', '1'))
+            if count < 1:
+                self._add_error(
+                    f"COUNT must be >= 1 for SERVICE '{name}', got {count}",
+                    "Provide a positive integer for COUNT"
+                )
+                count = 1
+        except ValueError:
+            self._add_error(
+                f"COUNT must be a number for SERVICE '{name}', got: {params.get('COUNT')}",
+                "Provide a valid integer for COUNT"
+            )
+            count = 1
+        
         image = params.get('IMAGE')
         network = params.get('NETWORK')
         if not image or not network:
@@ -543,7 +610,21 @@ class NDLConverter:
         params = self.parser.extract_params(line)
         
         # Store for expansion (similar to service)
-        count = int(params.get('COUNT', '1'))
+        # Parse and validate COUNT parameter
+        try:
+            count = int(params.get('COUNT', '1'))
+            if count < 1:
+                self._add_error(
+                    f"COUNT must be >= 1 for COMPONENT '{name}', got {count}",
+                    "Provide a positive integer for COUNT"
+                )
+                count = 1
+        except ValueError:
+            self._add_error(
+                f"COUNT must be a number for COMPONENT '{name}', got: {params.get('COUNT')}",
+                "Provide a valid integer for COUNT"
+            )
+            count = 1
         
         component_def = {
             'name': name,
@@ -569,11 +650,28 @@ class NDLConverter:
         
         params = self.parser.extract_params(line)
         
+        # Parse and validate TRUST_LEVEL (valid range is 0-10)
+        trust_level = 5  # default
+        if 'TRUST_LEVEL' in params:
+            try:
+                trust_level = int(params['TRUST_LEVEL'])
+                if trust_level < 0 or trust_level > 10:
+                    self._add_error(
+                        f"Invalid TRUST_LEVEL: {trust_level}. Valid range is 0-10",
+                        "Use a trust level between 0 and 10"
+                    )
+                    trust_level = 5  # reset to default on error
+            except ValueError:
+                self._add_error(
+                    f"TRUST_LEVEL must be a number, got: {params['TRUST_LEVEL']}",
+                    "Provide a valid integer for TRUST_LEVEL"
+                )
+        
         zone = Zone(
             name=name,
             type=params['TYPE'],
             networks=self.parser.parse_comma_list(params['NETWORKS']),
-            trust_level=int(params['TRUST_LEVEL']) if 'TRUST_LEVEL' in params else 5
+            trust_level=trust_level
         )
         
         # Mark trust level as explicitly set if provided
