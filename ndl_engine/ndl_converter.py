@@ -9,6 +9,7 @@ from dataclasses import dataclass, field
 from typing import List, Dict, Optional, Set, Any, Tuple
 from ipaddress import ip_network, IPv4Address, ip_address
 import re
+from enum import Enum
 
 
 # ============================================================================
@@ -225,6 +226,34 @@ class IntermediateRepresentation:
     _allocated_ips: Dict[str, Set[str]] = field(default_factory=dict)  # network -> set of IPs
     _volume_names: Set[str] = field(default_factory=set)
 
+# ============================================================================
+# Error Reporting
+# ============================================================================
+
+class Severity(Enum):
+    ERROR = "ERROR"
+    WARNING = "WARNING"
+    INFO = "INFO"
+
+@dataclass
+class ConversionError:
+    """Represents a conversion error or warning"""
+    severity: Severity
+    message: str
+    suggestion: Optional[str] = None
+    
+    def __str__(self):
+        severity_colors = {
+            Severity.ERROR: "\033[91m",    # Red
+            Severity.WARNING: "\033[93m",  # Yellow  
+            Severity.INFO: "\033[94m"      # Blue
+        }
+        reset = "\033[0m"
+        
+        result = f"{severity_colors[self.severity]}{self.severity.value}{reset}: {self.message}"
+        if self.suggestion:
+            result += f"\n  Fix: {self.suggestion}"
+        return result
 
 # ============================================================================
 # Parser Utilities
@@ -304,23 +333,43 @@ class NDLConverter:
     """Converts NDL file to intermediate representation"""
     
     def __init__(self):
+        self.errors: List[ConversionError] = []
+        self.warnings: List[ConversionError] = []
         self.ir = IntermediateRepresentation()
         self.parser = NDLParser()
         self._current_router = None  # Track router being parsed
+    
+    def _add_error(self, message: str, suggestion: str = None):
+        """Add an error to the list"""
+        self.errors.append(ConversionError(
+            Severity.ERROR,
+            message,
+            suggestion
+        ))
+    
+    def _add_warning(self, message: str, suggestion: str = None):
+        """Add a warning to the list"""
+        self.warnings.append(ConversionError(
+            Severity.WARNING,
+            message,
+            suggestion
+        ))
     
     def _parse_bool(self, params: Dict[str, str], key: str, default: bool = False) -> bool:
         """Helper method to consistently parse boolean parameters"""
         return params.get(key, str(default).lower()).lower() == 'true'
     
-    def convert_file(self, filepath: str) -> IntermediateRepresentation:
-        """Convert NDL file to intermediate representation"""
+    def convert_file(self, filepath: str) -> Tuple[IntermediateRepresentation, List[ConversionError], List[ConversionError]]:
+        """Convert NDL file to intermediate representation
+        Returns (ir, errors, warnings)"""
         with open(filepath, 'r') as f:
             lines = f.readlines()
         
         return self.convert_lines(lines)
     
-    def convert_lines(self, lines: List[str]) -> IntermediateRepresentation:
-        """Convert list of NDL lines to intermediate representation"""
+    def convert_lines(self, lines: List[str]) -> Tuple[IntermediateRepresentation, List[ConversionError], List[ConversionError]]:
+        """Convert list of NDL lines to intermediate representation
+        Returns (ir, errors, warnings)"""
         # Phase 1: Parse statements into internal structures
         self._parse_statements(lines)
         
@@ -330,7 +379,7 @@ class NDLConverter:
         # Phase 3: Resolve group memberships
         self._resolve_groups()
         
-        return self.ir
+        return self.ir, self.errors, self.warnings
     
     def _parse_statements(self, lines: List[str]):
         """Parse NDL statements line by line"""
@@ -442,8 +491,12 @@ class NDLConverter:
         
         # Store raw service definition for expansion
         count = int(params.get('COUNT', '1'))
-        image = params['IMAGE']
-        network = params['NETWORK']
+        image = params.get('IMAGE')
+        network = params.get('NETWORK')
+        if not image or not network:
+            self._add_error(f"SERVICE '{name}' missing required IMAGE or NETWORK parameter", 
+                          "Provide both IMAGE and NETWORK parameters")
+            return
         
         # Parse optional parameters
         ip = params.get('IP')
@@ -727,7 +780,9 @@ class NDLConverter:
         # Get network object for validation
         network_obj = self.ir._network_map.get(svc_def['network'])
         if not network_obj:
-            raise ValueError(f"Network '{svc_def['network']}' not found for service '{base_name}'")
+            self._add_error(f"Network not found for service '{base_name}'", 
+                          "Provide a valid network")
+            return
         
         subnet = ip_network(network_obj.subnet, strict=False)
         
@@ -736,20 +791,22 @@ class NDLConverter:
         if svc_def['ip_range']:
             start_ip, end_ip = self.parser.parse_ip_range(svc_def['ip_range'])
             all_ips = self._generate_ip_range(start_ip, end_ip, count)
+            if not all_ips:  # Check for None or empty list
+                return  # Error already added in _generate_ip_range
             
             # Validate that all IPs are within subnet
             for ip_str in all_ips:
                 if ip_address(ip_str) not in subnet:
-                    raise ValueError(
-                        f"IP {ip_str} for service '{base_name}' is not within subnet {subnet}"
-                    )
+                    self._add_error(f"IP {ip_str} for service '{base_name}' is not within subnet {subnet}", 
+                                  "Provide valid IPs within subnet")
+                    continue
             ips = all_ips
         elif svc_def['ip']:
             # Validate single IP is within subnet
             if ip_address(svc_def['ip']) not in subnet:
-                raise ValueError(
-                    f"IP {svc_def['ip']} for service '{base_name}' is not within subnet {subnet}"
-                )
+                self._add_error(f"IP {svc_def['ip']} for service '{base_name}' is not within subnet {subnet}", 
+                              "Provide a valid IP within subnet")
+                return
             ips = [svc_def['ip']]
         
         # Track instances
@@ -773,7 +830,9 @@ class NDLConverter:
                 if '=' in pattern:
                     vol_pattern, mount_path = pattern.split('=', 1)
                     if '{instance}' not in vol_pattern:
-                        raise ValueError(f"VOLUME_PATTERN must contain '{{instance}}' placeholder for service '{base_name}' (got: '{pattern}')")
+                        self._add_error(f"VOLUME_PATTERN must contain '{{instance}}' placeholder for service '{base_name}'", 
+                                      "Include '{instance}' in VOLUME_PATTERN")
+                        return
                     vol_name = vol_pattern.replace('{instance}', str(i+1))
                     volumes.append(VolumeMount(volume=vol_name, path=mount_path))
                     
@@ -812,7 +871,9 @@ class NDLConverter:
         # Get network object for validation
         network_obj = self.ir._network_map.get(comp_def['network'])
         if not network_obj:
-            raise ValueError(f"Network '{comp_def['network']}' not found for component '{base_name}'")
+            self._add_error(f"Network not found for component '{base_name}'", 
+                          "Provide a valid network")
+            return
         
         subnet = ip_network(network_obj.subnet, strict=False)
         
@@ -821,20 +882,22 @@ class NDLConverter:
         if comp_def['ip_range']:
             start_ip, end_ip = self.parser.parse_ip_range(comp_def['ip_range'])
             all_ips = self._generate_ip_range(start_ip, end_ip, count)
+            if not all_ips:  # Check for None or empty list
+                return  # Error already added in _generate_ip_range
             
             # Validate that all IPs are within subnet
             for ip_str in all_ips:
                 if ip_address(ip_str) not in subnet:
-                    raise ValueError(
-                        f"IP {ip_str} for component '{base_name}' is not within subnet {subnet}"
-                    )
+                    self._add_error(f"IP {ip_str} for component '{base_name}' is not within subnet {subnet}", 
+                                  "Provide valid IPs within subnet")
+                    return  # Stop processing this component
             ips = all_ips
         elif comp_def['ip']:
             # Validate single IP is within subnet
             if ip_address(comp_def['ip']) not in subnet:
-                raise ValueError(
-                    f"IP {comp_def['ip']} for component '{base_name}' is not within subnet {subnet}"
-                )
+                self._add_error(f"IP {comp_def['ip']} for component '{base_name}' is not within subnet {subnet}", 
+                              "Provide a valid IP within subnet")
+                return
             ips = [comp_def['ip']]
         
         # Track instances
@@ -879,19 +942,18 @@ class NDLConverter:
         
         # Validate that start <= end
         if start > end:
-            raise ValueError(
-                f"Invalid IP_RANGE {start_ip}-{end_ip}: start IP must be less than or equal to end IP"
-            )
+            self._add_error(f"Invalid IP_RANGE {start_ip}-{end_ip}: start IP must be less than or equal to end IP", 
+                          "Correct the IP range")
+            return []  # Return empty list instead of None
         
         # Calculate available IPs in range
         available_ips = int(end) - int(start) + 1
         
-        # Raise error if count exceeds available IPs
+        # Return error if count exceeds available IPs
         if count > available_ips:
-            raise ValueError(
-                f"IP_RANGE {start_ip}-{end_ip} has only {available_ips} IP(s) "
-                f"but COUNT={count} requires {count} IP(s)"
-            )
+            self._add_error(f"IP_RANGE {start_ip}-{end_ip} has only {available_ips} IP(s) but COUNT={count} requires {count} IP(s)", 
+                          "Adjust COUNT or IP_RANGE")
+            return []  # Return empty list instead of None
         
         ips = []
         current = start
@@ -931,7 +993,24 @@ if __name__ == "__main__":
         sys.exit(1)
     
     converter = NDLConverter()
-    ir = converter.convert_file(sys.argv[1])
+    ir, errors, warnings = converter.convert_file(sys.argv[1])
+    
+    # Print errors and warnings if any
+    if errors:
+        print(f"\n=== Conversion Errors ({len(errors)}) ===")
+        for error in errors:
+            print(error)
+            print()
+    
+    if warnings:
+        print(f"\n=== Conversion Warnings ({len(warnings)}) ===")
+        for warning in warnings:
+            print(warning)
+            print()
+    
+    if errors:
+        print("\n✗ Conversion failed due to errors")
+        sys.exit(1)
     
     # Print summary
     print(f"\n=== Conversion Summary ===")
@@ -956,3 +1035,8 @@ if __name__ == "__main__":
     print(f"\n=== IP Allocations ===")
     for network, ips in ir._allocated_ips.items():
         print(f"{network}: {sorted(ips)}")
+    
+    if warnings:
+        print(f"\n✓ Conversion successful with {len(warnings)} warning(s)")
+    else:
+        print("\n✓ Conversion successful")
