@@ -944,7 +944,7 @@ class NDLConverter:
         if start > end:
             self._add_error(f"Invalid IP_RANGE {start_ip}-{end_ip}: start IP must be less than or equal to end IP", 
                           "Correct the IP range")
-            return []  # Return empty list instead of None
+            return []
         
         # Calculate available IPs in range
         available_ips = int(end) - int(start) + 1
