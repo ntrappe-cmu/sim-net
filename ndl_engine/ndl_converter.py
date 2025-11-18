@@ -953,7 +953,7 @@ class NDLConverter:
         if count > available_ips:
             self._add_error(f"IP_RANGE {start_ip}-{end_ip} has only {available_ips} IP(s) but COUNT={count} requires {count} IP(s)", 
                           "Adjust COUNT or IP_RANGE")
-            return []  # Return empty list instead of None
+            return []
         
         ips = []
         current = start
