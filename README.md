@@ -35,7 +35,7 @@ The system will:
 
 For precise control or reproducible scenarios, write `.ndl` files directly.
 
-1. **Write your file (e.g., `benchmarks/01_equifax.ndl`):
+1. **Write your file (e.g., `benchmarks/01_equifax.ndl`):**
 ```bash
 NETWORK name=dmz subnet=10.0.1.0/24
 SERVICE name=web image=nginx:alpine network=dmz count=3
