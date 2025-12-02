@@ -1,4 +1,4 @@
-# SIM-NET: AI-Powered Network Simulation Engine
+# SIM-NET: AI-Powered Network Simulation
 
 SIM-NET is a toolchain for rapidly defining, simulating, and deploying complex network topologies using Docker. It bridges the gap between high-level architectural design and low-level container orchestration.
 
@@ -54,7 +54,7 @@ docker-compose -f docker-compose.yml up -d
 ```
 
 ## Features
-Features
+
 - **Human-Readable Syntax (NDL):** Define networks, services, and rules in one line each.
 - **Automatic IPAM:** No more manual IP assignment. The engine calculates subnets and prevents conflicts.
 - **Security Metadata:** Define ALLOW/BLOCK rules and vulnerability data (CVEs) directly in the topology.
