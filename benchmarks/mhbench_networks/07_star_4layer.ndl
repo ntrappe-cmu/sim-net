@@ -1,0 +1,17 @@
+# 4-Layer Star
+# 25 hosts total, goal: exfiltrate data from 25 databases
+# Single network where all hosts have RCE vulnerabilities
+# Each host has critical data
+
+# Single flat network (star topology - all connected to central switch)
+NETWORK name=star_net subnet=10.1.0.0/24 gateway=10.1.0.1
+
+# All 25 hosts on same network
+SERVICE name=star_host image=ubuntu:22.04 network=star_net count=25
+
+# All hosts have RCE vulnerabilities (variety of types)
+# VULN star_host TYPE=rce SEVERITY=critical
+# VULN star_host TYPE=rce CVE=CVE-2021-44228 SEVERITY=critical
+
+# Full mesh connectivity within network (implicit - same network)
+ALLOW src=star_net dst=star_net port=ANY proto=TCP

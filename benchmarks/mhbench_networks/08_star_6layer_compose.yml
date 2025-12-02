@@ -1,0 +1,286 @@
+version: '3.8'
+networks:
+  star_net:
+    driver: bridge
+    ipam:
+      config:
+      - subnet: 10.1.0.0/24
+        gateway: 10.1.0.1
+    driver_opts:
+      com.docker.network.bridge.name: star_net
+services:
+  star_host-1:
+    image: ubuntu:22.04
+    container_name: star_host-1
+    hostname: star_host-1
+    networks:
+      star_net:
+        ipv4_address: 10.1.0.2
+    environment: &id001 {}
+    labels:
+      com.ndl.original_name: star_host
+      com.ndl.managed: 'true'
+  star_host-2:
+    image: ubuntu:22.04
+    container_name: star_host-2
+    hostname: star_host-2
+    networks:
+      star_net:
+        ipv4_address: 10.1.0.3
+    environment: *id001
+    labels:
+      com.ndl.original_name: star_host
+      com.ndl.managed: 'true'
+  star_host-3:
+    image: ubuntu:22.04
+    container_name: star_host-3
+    hostname: star_host-3
+    networks:
+      star_net:
+        ipv4_address: 10.1.0.4
+    environment: *id001
+    labels:
+      com.ndl.original_name: star_host
+      com.ndl.managed: 'true'
+  star_host-4:
+    image: ubuntu:22.04
+    container_name: star_host-4
+    hostname: star_host-4
+    networks:
+      star_net:
+        ipv4_address: 10.1.0.5
+    environment: *id001
+    labels:
+      com.ndl.original_name: star_host
+      com.ndl.managed: 'true'
+  star_host-5:
+    image: ubuntu:22.04
+    container_name: star_host-5
+    hostname: star_host-5
+    networks:
+      star_net:
+        ipv4_address: 10.1.0.6
+    environment: *id001
+    labels:
+      com.ndl.original_name: star_host
+      com.ndl.managed: 'true'
+  star_host-6:
+    image: ubuntu:22.04
+    container_name: star_host-6
+    hostname: star_host-6
+    networks:
+      star_net:
+        ipv4_address: 10.1.0.7
+    environment: *id001
+    labels:
+      com.ndl.original_name: star_host
+      com.ndl.managed: 'true'
+  star_host-7:
+    image: ubuntu:22.04
+    container_name: star_host-7
+    hostname: star_host-7
+    networks:
+      star_net:
+        ipv4_address: 10.1.0.8
+    environment: *id001
+    labels:
+      com.ndl.original_name: star_host
+      com.ndl.managed: 'true'
+  star_host-8:
+    image: ubuntu:22.04
+    container_name: star_host-8
+    hostname: star_host-8
+    networks:
+      star_net:
+        ipv4_address: 10.1.0.9
+    environment: *id001
+    labels:
+      com.ndl.original_name: star_host
+      com.ndl.managed: 'true'
+  star_host-9:
+    image: ubuntu:22.04
+    container_name: star_host-9
+    hostname: star_host-9
+    networks:
+      star_net:
+        ipv4_address: 10.1.0.10
+    environment: *id001
+    labels:
+      com.ndl.original_name: star_host
+      com.ndl.managed: 'true'
+  star_host-10:
+    image: ubuntu:22.04
+    container_name: star_host-10
+    hostname: star_host-10
+    networks:
+      star_net:
+        ipv4_address: 10.1.0.11
+    environment: *id001
+    labels:
+      com.ndl.original_name: star_host
+      com.ndl.managed: 'true'
+  star_host-11:
+    image: ubuntu:22.04
+    container_name: star_host-11
+    hostname: star_host-11
+    networks:
+      star_net:
+        ipv4_address: 10.1.0.12
+    environment: *id001
+    labels:
+      com.ndl.original_name: star_host
+      com.ndl.managed: 'true'
+  star_host-12:
+    image: ubuntu:22.04
+    container_name: star_host-12
+    hostname: star_host-12
+    networks:
+      star_net:
+        ipv4_address: 10.1.0.13
+    environment: *id001
+    labels:
+      com.ndl.original_name: star_host
+      com.ndl.managed: 'true'
+  star_host-13:
+    image: ubuntu:22.04
+    container_name: star_host-13
+    hostname: star_host-13
+    networks:
+      star_net:
+        ipv4_address: 10.1.0.14
+    environment: *id001
+    labels:
+      com.ndl.original_name: star_host
+      com.ndl.managed: 'true'
+  star_host-14:
+    image: ubuntu:22.04
+    container_name: star_host-14
+    hostname: star_host-14
+    networks:
+      star_net:
+        ipv4_address: 10.1.0.15
+    environment: *id001
+    labels:
+      com.ndl.original_name: star_host
+      com.ndl.managed: 'true'
+  star_host-15:
+    image: ubuntu:22.04
+    container_name: star_host-15
+    hostname: star_host-15
+    networks:
+      star_net:
+        ipv4_address: 10.1.0.16
+    environment: *id001
+    labels:
+      com.ndl.original_name: star_host
+      com.ndl.managed: 'true'
+  star_host-16:
+    image: ubuntu:22.04
+    container_name: star_host-16
+    hostname: star_host-16
+    networks:
+      star_net:
+        ipv4_address: 10.1.0.17
+    environment: *id001
+    labels:
+      com.ndl.original_name: star_host
+      com.ndl.managed: 'true'
+  star_host-17:
+    image: ubuntu:22.04
+    container_name: star_host-17
+    hostname: star_host-17
+    networks:
+      star_net:
+        ipv4_address: 10.1.0.18
+    environment: *id001
+    labels:
+      com.ndl.original_name: star_host
+      com.ndl.managed: 'true'
+  star_host-18:
+    image: ubuntu:22.04
+    container_name: star_host-18
+    hostname: star_host-18
+    networks:
+      star_net:
+        ipv4_address: 10.1.0.19
+    environment: *id001
+    labels:
+      com.ndl.original_name: star_host
+      com.ndl.managed: 'true'
+  star_host-19:
+    image: ubuntu:22.04
+    container_name: star_host-19
+    hostname: star_host-19
+    networks:
+      star_net:
+        ipv4_address: 10.1.0.20
+    environment: *id001
+    labels:
+      com.ndl.original_name: star_host
+      com.ndl.managed: 'true'
+  star_host-20:
+    image: ubuntu:22.04
+    container_name: star_host-20
+    hostname: star_host-20
+    networks:
+      star_net:
+        ipv4_address: 10.1.0.21
+    environment: *id001
+    labels:
+      com.ndl.original_name: star_host
+      com.ndl.managed: 'true'
+  star_host-21:
+    image: ubuntu:22.04
+    container_name: star_host-21
+    hostname: star_host-21
+    networks:
+      star_net:
+        ipv4_address: 10.1.0.22
+    environment: *id001
+    labels:
+      com.ndl.original_name: star_host
+      com.ndl.managed: 'true'
+  star_host-22:
+    image: ubuntu:22.04
+    container_name: star_host-22
+    hostname: star_host-22
+    networks:
+      star_net:
+        ipv4_address: 10.1.0.23
+    environment: *id001
+    labels:
+      com.ndl.original_name: star_host
+      com.ndl.managed: 'true'
+  star_host-23:
+    image: ubuntu:22.04
+    container_name: star_host-23
+    hostname: star_host-23
+    networks:
+      star_net:
+        ipv4_address: 10.1.0.24
+    environment: *id001
+    labels:
+      com.ndl.original_name: star_host
+      com.ndl.managed: 'true'
+  star_host-24:
+    image: ubuntu:22.04
+    container_name: star_host-24
+    hostname: star_host-24
+    networks:
+      star_net:
+        ipv4_address: 10.1.0.25
+    environment: *id001
+    labels:
+      com.ndl.original_name: star_host
+      com.ndl.managed: 'true'
+  star_host-25:
+    image: ubuntu:22.04
+    container_name: star_host-25
+    hostname: star_host-25
+    networks:
+      star_net:
+        ipv4_address: 10.1.0.26
+    environment: *id001
+    labels:
+      com.ndl.original_name: star_host
+      com.ndl.managed: 'true'

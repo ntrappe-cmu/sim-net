@@ -1,0 +1,522 @@
+version: '3.8'
+networks:
+  corporate_net:
+    driver: bridge
+    ipam:
+      config:
+      - subnet: 10.1.0.0/24
+        gateway: 10.1.0.1
+    driver_opts:
+      com.docker.network.bridge.name: corporate_net
+  it_dmz_net:
+    driver: bridge
+    ipam:
+      config:
+      - subnet: 10.2.0.0/24
+        gateway: 10.2.0.1
+    driver_opts:
+      com.docker.network.bridge.name: it_dmz_net
+  ot_net:
+    driver: bridge
+    ipam:
+      config:
+      - subnet: 192.168.100.0/24
+        gateway: 192.168.100.1
+    driver_opts:
+      com.docker.network.bridge.name: ot_net
+services:
+  corp_workstation-1:
+    image: ubuntu:22.04
+    container_name: corp_workstation-1
+    hostname: corp_workstation-1
+    networks:
+      corporate_net:
+        ipv4_address: 10.1.0.2
+    environment: &id001 {}
+    labels:
+      com.ndl.original_name: corp_workstation
+      com.ndl.managed: 'true'
+  corp_workstation-2:
+    image: ubuntu:22.04
+    container_name: corp_workstation-2
+    hostname: corp_workstation-2
+    networks:
+      corporate_net:
+        ipv4_address: 10.1.0.3
+    environment: *id001
+    labels:
+      com.ndl.original_name: corp_workstation
+      com.ndl.managed: 'true'
+  corp_workstation-3:
+    image: ubuntu:22.04
+    container_name: corp_workstation-3
+    hostname: corp_workstation-3
+    networks:
+      corporate_net:
+        ipv4_address: 10.1.0.4
+    environment: *id001
+    labels:
+      com.ndl.original_name: corp_workstation
+      com.ndl.managed: 'true'
+  corp_workstation-4:
+    image: ubuntu:22.04
+    container_name: corp_workstation-4
+    hostname: corp_workstation-4
+    networks:
+      corporate_net:
+        ipv4_address: 10.1.0.5
+    environment: *id001
+    labels:
+      com.ndl.original_name: corp_workstation
+      com.ndl.managed: 'true'
+  corp_workstation-5:
+    image: ubuntu:22.04
+    container_name: corp_workstation-5
+    hostname: corp_workstation-5
+    networks:
+      corporate_net:
+        ipv4_address: 10.1.0.6
+    environment: *id001
+    labels:
+      com.ndl.original_name: corp_workstation
+      com.ndl.managed: 'true'
+  corp_workstation-6:
+    image: ubuntu:22.04
+    container_name: corp_workstation-6
+    hostname: corp_workstation-6
+    networks:
+      corporate_net:
+        ipv4_address: 10.1.0.7
+    environment: *id001
+    labels:
+      com.ndl.original_name: corp_workstation
+      com.ndl.managed: 'true'
+  corp_workstation-7:
+    image: ubuntu:22.04
+    container_name: corp_workstation-7
+    hostname: corp_workstation-7
+    networks:
+      corporate_net:
+        ipv4_address: 10.1.0.8
+    environment: *id001
+    labels:
+      com.ndl.original_name: corp_workstation
+      com.ndl.managed: 'true'
+  corp_workstation-8:
+    image: ubuntu:22.04
+    container_name: corp_workstation-8
+    hostname: corp_workstation-8
+    networks:
+      corporate_net:
+        ipv4_address: 10.1.0.9
+    environment: *id001
+    labels:
+      com.ndl.original_name: corp_workstation
+      com.ndl.managed: 'true'
+  corp_workstation-9:
+    image: ubuntu:22.04
+    container_name: corp_workstation-9
+    hostname: corp_workstation-9
+    networks:
+      corporate_net:
+        ipv4_address: 10.1.0.10
+    environment: *id001
+    labels:
+      com.ndl.original_name: corp_workstation
+      com.ndl.managed: 'true'
+  corp_workstation-10:
+    image: ubuntu:22.04
+    container_name: corp_workstation-10
+    hostname: corp_workstation-10
+    networks:
+      corporate_net:
+        ipv4_address: 10.1.0.11
+    environment: *id001
+    labels:
+      com.ndl.original_name: corp_workstation
+      com.ndl.managed: 'true'
+  corp_workstation-11:
+    image: ubuntu:22.04
+    container_name: corp_workstation-11
+    hostname: corp_workstation-11
+    networks:
+      corporate_net:
+        ipv4_address: 10.1.0.12
+    environment: *id001
+    labels:
+      com.ndl.original_name: corp_workstation
+      com.ndl.managed: 'true'
+  corp_workstation-12:
+    image: ubuntu:22.04
+    container_name: corp_workstation-12
+    hostname: corp_workstation-12
+    networks:
+      corporate_net:
+        ipv4_address: 10.1.0.13
+    environment: *id001
+    labels:
+      com.ndl.original_name: corp_workstation
+      com.ndl.managed: 'true'
+  corp_workstation-13:
+    image: ubuntu:22.04
+    container_name: corp_workstation-13
+    hostname: corp_workstation-13
+    networks:
+      corporate_net:
+        ipv4_address: 10.1.0.14
+    environment: *id001
+    labels:
+      com.ndl.original_name: corp_workstation
+      com.ndl.managed: 'true'
+  corp_workstation-14:
+    image: ubuntu:22.04
+    container_name: corp_workstation-14
+    hostname: corp_workstation-14
+    networks:
+      corporate_net:
+        ipv4_address: 10.1.0.15
+    environment: *id001
+    labels:
+      com.ndl.original_name: corp_workstation
+      com.ndl.managed: 'true'
+  corp_workstation-15:
+    image: ubuntu:22.04
+    container_name: corp_workstation-15
+    hostname: corp_workstation-15
+    networks:
+      corporate_net:
+        ipv4_address: 10.1.0.16
+    environment: *id001
+    labels:
+      com.ndl.original_name: corp_workstation
+      com.ndl.managed: 'true'
+  mgmt_server-1:
+    image: ubuntu:22.04
+    container_name: mgmt_server-1
+    hostname: mgmt_server-1
+    networks:
+      it_dmz_net:
+        ipv4_address: 10.2.0.2
+    environment: &id002 {}
+    labels:
+      com.ndl.original_name: mgmt_server
+      com.ndl.managed: 'true'
+  mgmt_server-2:
+    image: ubuntu:22.04
+    container_name: mgmt_server-2
+    hostname: mgmt_server-2
+    networks:
+      it_dmz_net:
+        ipv4_address: 10.2.0.3
+    environment: *id002
+    labels:
+      com.ndl.original_name: mgmt_server
+      com.ndl.managed: 'true'
+  mgmt_server-3:
+    image: ubuntu:22.04
+    container_name: mgmt_server-3
+    hostname: mgmt_server-3
+    networks:
+      it_dmz_net:
+        ipv4_address: 10.2.0.4
+    environment: *id002
+    labels:
+      com.ndl.original_name: mgmt_server
+      com.ndl.managed: 'true'
+  mgmt_server-4:
+    image: ubuntu:22.04
+    container_name: mgmt_server-4
+    hostname: mgmt_server-4
+    networks:
+      it_dmz_net:
+        ipv4_address: 10.2.0.5
+    environment: *id002
+    labels:
+      com.ndl.original_name: mgmt_server
+      com.ndl.managed: 'true'
+  mgmt_server-5:
+    image: ubuntu:22.04
+    container_name: mgmt_server-5
+    hostname: mgmt_server-5
+    networks:
+      it_dmz_net:
+        ipv4_address: 10.2.0.6
+    environment: *id002
+    labels:
+      com.ndl.original_name: mgmt_server
+      com.ndl.managed: 'true'
+  mgmt_server-6:
+    image: ubuntu:22.04
+    container_name: mgmt_server-6
+    hostname: mgmt_server-6
+    networks:
+      it_dmz_net:
+        ipv4_address: 10.2.0.7
+    environment: *id002
+    labels:
+      com.ndl.original_name: mgmt_server
+      com.ndl.managed: 'true'
+  mgmt_server-7:
+    image: ubuntu:22.04
+    container_name: mgmt_server-7
+    hostname: mgmt_server-7
+    networks:
+      it_dmz_net:
+        ipv4_address: 10.2.0.8
+    environment: *id002
+    labels:
+      com.ndl.original_name: mgmt_server
+      com.ndl.managed: 'true'
+  mgmt_server-8:
+    image: ubuntu:22.04
+    container_name: mgmt_server-8
+    hostname: mgmt_server-8
+    networks:
+      it_dmz_net:
+        ipv4_address: 10.2.0.9
+    environment: *id002
+    labels:
+      com.ndl.original_name: mgmt_server
+      com.ndl.managed: 'true'
+  mgmt_server-9:
+    image: ubuntu:22.04
+    container_name: mgmt_server-9
+    hostname: mgmt_server-9
+    networks:
+      it_dmz_net:
+        ipv4_address: 10.2.0.10
+    environment: *id002
+    labels:
+      com.ndl.original_name: mgmt_server
+      com.ndl.managed: 'true'
+  mgmt_server-10:
+    image: ubuntu:22.04
+    container_name: mgmt_server-10
+    hostname: mgmt_server-10
+    networks:
+      it_dmz_net:
+        ipv4_address: 10.2.0.11
+    environment: *id002
+    labels:
+      com.ndl.original_name: mgmt_server
+      com.ndl.managed: 'true'
+  historian-1:
+    image: timescaledb:latest
+    container_name: historian-1
+    hostname: historian-1
+    networks:
+      it_dmz_net:
+        ipv4_address: 10.2.0.12
+    environment: &id003 {}
+    labels:
+      com.ndl.original_name: historian
+      com.ndl.managed: 'true'
+  historian-2:
+    image: timescaledb:latest
+    container_name: historian-2
+    hostname: historian-2
+    networks:
+      it_dmz_net:
+        ipv4_address: 10.2.0.13
+    environment: *id003
+    labels:
+      com.ndl.original_name: historian
+      com.ndl.managed: 'true'
+  historian-3:
+    image: timescaledb:latest
+    container_name: historian-3
+    hostname: historian-3
+    networks:
+      it_dmz_net:
+        ipv4_address: 10.2.0.14
+    environment: *id003
+    labels:
+      com.ndl.original_name: historian
+      com.ndl.managed: 'true'
+  historian-4:
+    image: timescaledb:latest
+    container_name: historian-4
+    hostname: historian-4
+    networks:
+      it_dmz_net:
+        ipv4_address: 10.2.0.15
+    environment: *id003
+    labels:
+      com.ndl.original_name: historian
+      com.ndl.managed: 'true'
+  historian-5:
+    image: timescaledb:latest
+    container_name: historian-5
+    hostname: historian-5
+    networks:
+      it_dmz_net:
+        ipv4_address: 10.2.0.16
+    environment: *id003
+    labels:
+      com.ndl.original_name: historian
+      com.ndl.managed: 'true'
+  actuator-1:
+    image: softplc:latest
+    container_name: actuator-1
+    hostname: actuator-1
+    networks:
+      ot_net:
+        ipv4_address: 192.168.100.2
+    environment: &id004 {}
+    labels:
+      com.ndl.original_name: actuator
+      com.ndl.managed: 'true'
+  actuator-2:
+    image: softplc:latest
+    container_name: actuator-2
+    hostname: actuator-2
+    networks:
+      ot_net:
+        ipv4_address: 192.168.100.3
+    environment: *id004
+    labels:
+      com.ndl.original_name: actuator
+      com.ndl.managed: 'true'
+  actuator-3:
+    image: softplc:latest
+    container_name: actuator-3
+    hostname: actuator-3
+    networks:
+      ot_net:
+        ipv4_address: 192.168.100.4
+    environment: *id004
+    labels:
+      com.ndl.original_name: actuator
+      com.ndl.managed: 'true'
+  actuator-4:
+    image: softplc:latest
+    container_name: actuator-4
+    hostname: actuator-4
+    networks:
+      ot_net:
+        ipv4_address: 192.168.100.5
+    environment: *id004
+    labels:
+      com.ndl.original_name: actuator
+      com.ndl.managed: 'true'
+  actuator-5:
+    image: softplc:latest
+    container_name: actuator-5
+    hostname: actuator-5
+    networks:
+      ot_net:
+        ipv4_address: 192.168.100.6
+    environment: *id004
+    labels:
+      com.ndl.original_name: actuator
+      com.ndl.managed: 'true'
+  actuator-6:
+    image: softplc:latest
+    container_name: actuator-6
+    hostname: actuator-6
+    networks:
+      ot_net:
+        ipv4_address: 192.168.100.7
+    environment: *id004
+    labels:
+      com.ndl.original_name: actuator
+      com.ndl.managed: 'true'
+  actuator-7:
+    image: softplc:latest
+    container_name: actuator-7
+    hostname: actuator-7
+    networks:
+      ot_net:
+        ipv4_address: 192.168.100.8
+    environment: *id004
+    labels:
+      com.ndl.original_name: actuator
+      com.ndl.managed: 'true'
+  actuator-8:
+    image: softplc:latest
+    container_name: actuator-8
+    hostname: actuator-8
+    networks:
+      ot_net:
+        ipv4_address: 192.168.100.9
+    environment: *id004
+    labels:
+      com.ndl.original_name: actuator
+      com.ndl.managed: 'true'
+  actuator-9:
+    image: softplc:latest
+    container_name: actuator-9
+    hostname: actuator-9
+    networks:
+      ot_net:
+        ipv4_address: 192.168.100.10
+    environment: *id004
+    labels:
+      com.ndl.original_name: actuator
+      com.ndl.managed: 'true'
+  actuator-10:
+    image: softplc:latest
+    container_name: actuator-10
+    hostname: actuator-10
+    networks:
+      ot_net:
+        ipv4_address: 192.168.100.11
+    environment: *id004
+    labels:
+      com.ndl.original_name: actuator
+      com.ndl.managed: 'true'
+  actuator-11:
+    image: softplc:latest
+    container_name: actuator-11
+    hostname: actuator-11
+    networks:
+      ot_net:
+        ipv4_address: 192.168.100.12
+    environment: *id004
+    labels:
+      com.ndl.original_name: actuator
+      com.ndl.managed: 'true'
+  actuator-12:
+    image: softplc:latest
+    container_name: actuator-12
+    hostname: actuator-12
+    networks:
+      ot_net:
+        ipv4_address: 192.168.100.13
+    environment: *id004
+    labels:
+      com.ndl.original_name: actuator
+      com.ndl.managed: 'true'
+  actuator-13:
+    image: softplc:latest
+    container_name: actuator-13
+    hostname: actuator-13
+    networks:
+      ot_net:
+        ipv4_address: 192.168.100.14
+    environment: *id004
+    labels:
+      com.ndl.original_name: actuator
+      com.ndl.managed: 'true'
+  actuator-14:
+    image: softplc:latest
+    container_name: actuator-14
+    hostname: actuator-14
+    networks:
+      ot_net:
+        ipv4_address: 192.168.100.15
+    environment: *id004
+    labels:
+      com.ndl.original_name: actuator
+      com.ndl.managed: 'true'
+  actuator-15:
+    image: softplc:latest
+    container_name: actuator-15
+    hostname: actuator-15
+    networks:
+      ot_net:
+        ipv4_address: 192.168.100.16
+    environment: *id004
+    labels:
+      com.ndl.original_name: actuator
+      com.ndl.managed: 'true'

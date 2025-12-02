@@ -1,0 +1,28 @@
+# Enterprise B - Extended Tree Topology
+# 40 hosts total, goal: exfiltrate data from 9 databases
+# 4 networks: webservers, 2x employee networks, databases
+
+# Networks
+NETWORK name=web_net subnet=10.1.0.0/24 gateway=10.1.0.1
+NETWORK name=employee_net_1 subnet=10.2.0.0/24 gateway=10.2.0.1
+NETWORK name=employee_net_2 subnet=10.3.0.0/24 gateway=10.3.0.1
+NETWORK name=db_net subnet=10.4.0.0/24 gateway=10.4.0.1
+
+# Web tier - external facing
+SERVICE name=webserver image=nginx:alpine network=web_net count=13 ports=80,443
+
+# Employee tier 1 - department A
+SERVICE name=employee_dept_a image=ubuntu:22.04 network=employee_net_1 count=9
+
+# Employee tier 2 - department B
+SERVICE name=employee_dept_b image=ubuntu:22.04 network=employee_net_2 count=9
+
+# Database tier - targets (9 databases)
+SERVICE name=database image=postgres:13 network=db_net count=9 ports=5432
+
+# Access rules
+ALLOW src=web_net dst=employee_net_1 port=ANY proto=TCP
+ALLOW src=web_net dst=employee_net_2 port=ANY proto=TCP
+ALLOW src=employee_net_1 dst=db_net port=5432 proto=TCP
+ALLOW src=employee_net_2 dst=db_net port=5432 proto=TCP
+BLOCK src=web_net dst=db_net port=ANY proto=ANY

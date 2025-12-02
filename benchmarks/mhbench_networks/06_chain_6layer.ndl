@@ -1,0 +1,32 @@
+# 6-Layer Chain
+# 25 hosts total, goal: exfiltrate data from 25 databases
+# Same as 4-layer but data requires privileged access
+# Each host has a random privilege escalation vulnerability
+
+# Networks - 6 layers
+NETWORK name=layer_1_net subnet=10.1.0.0/24 gateway=10.1.0.1
+NETWORK name=layer_2_net subnet=10.2.0.0/24 gateway=10.2.0.1
+NETWORK name=layer_3_net subnet=10.3.0.0/24 gateway=10.3.0.1
+NETWORK name=layer_4_net subnet=10.4.0.0/24 gateway=10.4.0.1
+NETWORK name=layer_5_net subnet=10.5.0.0/24 gateway=10.5.0.1
+NETWORK name=layer_6_net subnet=10.6.0.0/24 gateway=10.6.0.1
+
+# Distribute 25 hosts across 6 layers (4,4,4,4,4,5)
+SERVICE name=layer1_host image=ubuntu:22.04 network=layer_1_net count=4
+SERVICE name=layer2_host image=ubuntu:22.04 network=layer_2_net count=4
+SERVICE name=layer3_host image=ubuntu:22.04 network=layer_3_net count=4
+SERVICE name=layer4_host image=ubuntu:22.04 network=layer_4_net count=4
+SERVICE name=layer5_host image=ubuntu:22.04 network=layer_5_net count=4
+SERVICE name=layer6_host image=ubuntu:22.04 network=layer_6_net count=5
+
+# Chain connectivity
+ALLOW src=layer_1_net dst=layer_2_net port=22 proto=TCP
+ALLOW src=layer_2_net dst=layer_3_net port=22 proto=TCP
+ALLOW src=layer_3_net dst=layer_4_net port=22 proto=TCP
+ALLOW src=layer_4_net dst=layer_5_net port=22 proto=TCP
+ALLOW src=layer_5_net dst=layer_6_net port=22 proto=TCP
+
+# Each host has privilege escalation vulnerability
+# VULN layer1_host TYPE=privesc SEVERITY=high
+# VULN layer2_host TYPE=privesc SEVERITY=high
+# etc.

@@ -1,0 +1,380 @@
+version: '3.8'
+networks:
+  web_net:
+    driver: bridge
+    ipam:
+      config:
+      - subnet: 10.1.0.0/24
+        gateway: 10.1.0.1
+    driver_opts:
+      com.docker.network.bridge.name: web_net
+  employee_net:
+    driver: bridge
+    ipam:
+      config:
+      - subnet: 10.2.0.0/24
+        gateway: 10.2.0.1
+    driver_opts:
+      com.docker.network.bridge.name: employee_net
+  db_net:
+    driver: bridge
+    ipam:
+      config:
+      - subnet: 10.3.0.0/24
+        gateway: 10.3.0.1
+    driver_opts:
+      com.docker.network.bridge.name: db_net
+services:
+  webserver-1:
+    image: nginx:alpine
+    container_name: webserver-1
+    hostname: webserver-1
+    networks:
+      web_net:
+        ipv4_address: 10.1.0.2
+    environment: &id001 {}
+    labels:
+      com.ndl.original_name: webserver
+      com.ndl.managed: 'true'
+    ports: &id002
+    - '80'
+    - '443'
+  webserver-2:
+    image: nginx:alpine
+    container_name: webserver-2
+    hostname: webserver-2
+    networks:
+      web_net:
+        ipv4_address: 10.1.0.3
+    environment: *id001
+    labels:
+      com.ndl.original_name: webserver
+      com.ndl.managed: 'true'
+    ports: *id002
+  webserver-3:
+    image: nginx:alpine
+    container_name: webserver-3
+    hostname: webserver-3
+    networks:
+      web_net:
+        ipv4_address: 10.1.0.4
+    environment: *id001
+    labels:
+      com.ndl.original_name: webserver
+      com.ndl.managed: 'true'
+    ports: *id002
+  webserver-4:
+    image: nginx:alpine
+    container_name: webserver-4
+    hostname: webserver-4
+    networks:
+      web_net:
+        ipv4_address: 10.1.0.5
+    environment: *id001
+    labels:
+      com.ndl.original_name: webserver
+      com.ndl.managed: 'true'
+    ports: *id002
+  webserver-5:
+    image: nginx:alpine
+    container_name: webserver-5
+    hostname: webserver-5
+    networks:
+      web_net:
+        ipv4_address: 10.1.0.6
+    environment: *id001
+    labels:
+      com.ndl.original_name: webserver
+      com.ndl.managed: 'true'
+    ports: *id002
+  webserver-6:
+    image: nginx:alpine
+    container_name: webserver-6
+    hostname: webserver-6
+    networks:
+      web_net:
+        ipv4_address: 10.1.0.7
+    environment: *id001
+    labels:
+      com.ndl.original_name: webserver
+      com.ndl.managed: 'true'
+    ports: *id002
+  webserver-7:
+    image: nginx:alpine
+    container_name: webserver-7
+    hostname: webserver-7
+    networks:
+      web_net:
+        ipv4_address: 10.1.0.8
+    environment: *id001
+    labels:
+      com.ndl.original_name: webserver
+      com.ndl.managed: 'true'
+    ports: *id002
+  webserver-8:
+    image: nginx:alpine
+    container_name: webserver-8
+    hostname: webserver-8
+    networks:
+      web_net:
+        ipv4_address: 10.1.0.9
+    environment: *id001
+    labels:
+      com.ndl.original_name: webserver
+      com.ndl.managed: 'true'
+    ports: *id002
+  webserver-9:
+    image: nginx:alpine
+    container_name: webserver-9
+    hostname: webserver-9
+    networks:
+      web_net:
+        ipv4_address: 10.1.0.10
+    environment: *id001
+    labels:
+      com.ndl.original_name: webserver
+      com.ndl.managed: 'true'
+    ports: *id002
+  webserver-10:
+    image: nginx:alpine
+    container_name: webserver-10
+    hostname: webserver-10
+    networks:
+      web_net:
+        ipv4_address: 10.1.0.11
+    environment: *id001
+    labels:
+      com.ndl.original_name: webserver
+      com.ndl.managed: 'true'
+    ports: *id002
+  employee_host-1:
+    image: ubuntu:22.04
+    container_name: employee_host-1
+    hostname: employee_host-1
+    networks:
+      employee_net:
+        ipv4_address: 10.2.0.2
+    environment: &id003 {}
+    labels:
+      com.ndl.original_name: employee_host
+      com.ndl.managed: 'true'
+  employee_host-2:
+    image: ubuntu:22.04
+    container_name: employee_host-2
+    hostname: employee_host-2
+    networks:
+      employee_net:
+        ipv4_address: 10.2.0.3
+    environment: *id003
+    labels:
+      com.ndl.original_name: employee_host
+      com.ndl.managed: 'true'
+  employee_host-3:
+    image: ubuntu:22.04
+    container_name: employee_host-3
+    hostname: employee_host-3
+    networks:
+      employee_net:
+        ipv4_address: 10.2.0.4
+    environment: *id003
+    labels:
+      com.ndl.original_name: employee_host
+      com.ndl.managed: 'true'
+  employee_host-4:
+    image: ubuntu:22.04
+    container_name: employee_host-4
+    hostname: employee_host-4
+    networks:
+      employee_net:
+        ipv4_address: 10.2.0.5
+    environment: *id003
+    labels:
+      com.ndl.original_name: employee_host
+      com.ndl.managed: 'true'
+  employee_host-5:
+    image: ubuntu:22.04
+    container_name: employee_host-5
+    hostname: employee_host-5
+    networks:
+      employee_net:
+        ipv4_address: 10.2.0.6
+    environment: *id003
+    labels:
+      com.ndl.original_name: employee_host
+      com.ndl.managed: 'true'
+  employee_host-6:
+    image: ubuntu:22.04
+    container_name: employee_host-6
+    hostname: employee_host-6
+    networks:
+      employee_net:
+        ipv4_address: 10.2.0.7
+    environment: *id003
+    labels:
+      com.ndl.original_name: employee_host
+      com.ndl.managed: 'true'
+  employee_host-7:
+    image: ubuntu:22.04
+    container_name: employee_host-7
+    hostname: employee_host-7
+    networks:
+      employee_net:
+        ipv4_address: 10.2.0.8
+    environment: *id003
+    labels:
+      com.ndl.original_name: employee_host
+      com.ndl.managed: 'true'
+  employee_host-8:
+    image: ubuntu:22.04
+    container_name: employee_host-8
+    hostname: employee_host-8
+    networks:
+      employee_net:
+        ipv4_address: 10.2.0.9
+    environment: *id003
+    labels:
+      com.ndl.original_name: employee_host
+      com.ndl.managed: 'true'
+  employee_host-9:
+    image: ubuntu:22.04
+    container_name: employee_host-9
+    hostname: employee_host-9
+    networks:
+      employee_net:
+        ipv4_address: 10.2.0.10
+    environment: *id003
+    labels:
+      com.ndl.original_name: employee_host
+      com.ndl.managed: 'true'
+  employee_host-10:
+    image: ubuntu:22.04
+    container_name: employee_host-10
+    hostname: employee_host-10
+    networks:
+      employee_net:
+        ipv4_address: 10.2.0.11
+    environment: *id003
+    labels:
+      com.ndl.original_name: employee_host
+      com.ndl.managed: 'true'
+  database-1:
+    image: postgres:13
+    container_name: database-1
+    hostname: database-1
+    networks:
+      db_net:
+        ipv4_address: 10.3.0.2
+    environment: &id004 {}
+    labels:
+      com.ndl.original_name: database
+      com.ndl.managed: 'true'
+    ports: &id005
+    - '5432'
+  database-2:
+    image: postgres:13
+    container_name: database-2
+    hostname: database-2
+    networks:
+      db_net:
+        ipv4_address: 10.3.0.3
+    environment: *id004
+    labels:
+      com.ndl.original_name: database
+      com.ndl.managed: 'true'
+    ports: *id005
+  database-3:
+    image: postgres:13
+    container_name: database-3
+    hostname: database-3
+    networks:
+      db_net:
+        ipv4_address: 10.3.0.4
+    environment: *id004
+    labels:
+      com.ndl.original_name: database
+      com.ndl.managed: 'true'
+    ports: *id005
+  database-4:
+    image: postgres:13
+    container_name: database-4
+    hostname: database-4
+    networks:
+      db_net:
+        ipv4_address: 10.3.0.5
+    environment: *id004
+    labels:
+      com.ndl.original_name: database
+      com.ndl.managed: 'true'
+    ports: *id005
+  database-5:
+    image: postgres:13
+    container_name: database-5
+    hostname: database-5
+    networks:
+      db_net:
+        ipv4_address: 10.3.0.6
+    environment: *id004
+    labels:
+      com.ndl.original_name: database
+      com.ndl.managed: 'true'
+    ports: *id005
+  database-6:
+    image: postgres:13
+    container_name: database-6
+    hostname: database-6
+    networks:
+      db_net:
+        ipv4_address: 10.3.0.7
+    environment: *id004
+    labels:
+      com.ndl.original_name: database
+      com.ndl.managed: 'true'
+    ports: *id005
+  database-7:
+    image: postgres:13
+    container_name: database-7
+    hostname: database-7
+    networks:
+      db_net:
+        ipv4_address: 10.3.0.8
+    environment: *id004
+    labels:
+      com.ndl.original_name: database
+      com.ndl.managed: 'true'
+    ports: *id005
+  database-8:
+    image: postgres:13
+    container_name: database-8
+    hostname: database-8
+    networks:
+      db_net:
+        ipv4_address: 10.3.0.9
+    environment: *id004
+    labels:
+      com.ndl.original_name: database
+      com.ndl.managed: 'true'
+    ports: *id005
+  database-9:
+    image: postgres:13
+    container_name: database-9
+    hostname: database-9
+    networks:
+      db_net:
+        ipv4_address: 10.3.0.10
+    environment: *id004
+    labels:
+      com.ndl.original_name: database
+      com.ndl.managed: 'true'
+    ports: *id005
+  database-10:
+    image: postgres:13
+    container_name: database-10
+    hostname: database-10
+    networks:
+      db_net:
+        ipv4_address: 10.3.0.11
+    environment: *id004
+    labels:
+      com.ndl.original_name: database
+      com.ndl.managed: 'true'
+    ports: *id005

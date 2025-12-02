@@ -1,0 +1,22 @@
+# Dumbbell A
+# 30 hosts total, goal: exfiltrate data from 15 databases
+# Two networks: one with external webservers, another with databases
+# Each web server has credentials to a unique database
+
+# Networks - two "bells" of the dumbbell
+NETWORK name=web_net subnet=10.1.0.0/24 gateway=10.1.0.1
+NETWORK name=db_net subnet=10.2.0.0/24 gateway=10.2.0.1
+
+# Web servers (external facing)
+SERVICE name=webserver image=nginx:alpine network=web_net count=15 ports=80,443
+
+# Databases (targets)
+SERVICE name=database image=postgres:13 network=db_net count=15 ports=5432
+
+# Each webserver has creds to one database (1:1 mapping)
+# CREDS webserver-1 TARGET=database-1 TYPE=database
+# CREDS webserver-2 TARGET=database-2 TYPE=database
+# ... etc
+
+# Connectivity between the two networks
+ALLOW src=web_net dst=db_net port=5432 proto=TCP

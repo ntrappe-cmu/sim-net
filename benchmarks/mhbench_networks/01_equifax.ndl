@@ -1,0 +1,28 @@
+# Equifax-Inspired Network
+# 50 hosts total, goal: exfiltrate data from 48 databases
+# Based on public breach report topology
+
+# Networks - DMZ, Application, and Data tiers
+NETWORK name=dmz_net subnet=10.1.0.0/24 gateway=10.1.0.1
+NETWORK name=app_net subnet=10.2.0.0/24 gateway=10.2.0.1
+NETWORK name=data_net subnet=10.3.0.0/23 gateway=10.3.0.1
+
+# DMZ Layer - Web servers (2 hosts)
+SERVICE name=web_server image=nginx:alpine network=dmz_net count=2 ports=80,443
+
+# Application Layer - App servers (no specific count mentioned, assuming based on total)
+# 50 - 48 databases - 2 web = 0, but we need some app servers
+# Let's assume a reasonable split: 2 web, 48 db = 50, no app servers explicit
+
+# Data Layer - 48 Databases (the main targets)
+SERVICE name=database image=postgres:13 network=data_net count=48 ports=5432
+
+# Vulnerabilities (metadata)
+# VULN web_server TYPE=rce CVE=CVE-2017-5638 SEVERITY=critical
+
+# Credential chains - web servers have creds to databases
+# CREDS web_server TARGET=database TYPE=database USERNAME=dbuser
+
+# Access rules
+ALLOW src=dmz_net dst=data_net port=5432 proto=TCP
+BLOCK src=external dst=data_net port=ANY proto=ANY

@@ -1,0 +1,630 @@
+version: '3.8'
+networks:
+  dmz_net:
+    driver: bridge
+    ipam:
+      config:
+      - subnet: 10.1.0.0/24
+        gateway: 10.1.0.1
+    driver_opts:
+      com.docker.network.bridge.name: dmz_net
+  app_net:
+    driver: bridge
+    ipam:
+      config:
+      - subnet: 10.2.0.0/24
+        gateway: 10.2.0.1
+    driver_opts:
+      com.docker.network.bridge.name: app_net
+  data_net:
+    driver: bridge
+    ipam:
+      config:
+      - subnet: 10.3.0.0/23
+        gateway: 10.3.0.1
+    driver_opts:
+      com.docker.network.bridge.name: data_net
+services:
+  web_server-1:
+    image: nginx:alpine
+    container_name: web_server-1
+    hostname: web_server-1
+    networks:
+      dmz_net:
+        ipv4_address: 10.1.0.2
+    environment: &id001 {}
+    labels:
+      com.ndl.original_name: web_server
+      com.ndl.managed: 'true'
+    ports: &id002
+    - '80'
+    - '443'
+  web_server-2:
+    image: nginx:alpine
+    container_name: web_server-2
+    hostname: web_server-2
+    networks:
+      dmz_net:
+        ipv4_address: 10.1.0.3
+    environment: *id001
+    labels:
+      com.ndl.original_name: web_server
+      com.ndl.managed: 'true'
+    ports: *id002
+  database-1:
+    image: postgres:13
+    container_name: database-1
+    hostname: database-1
+    networks:
+      data_net:
+        ipv4_address: 10.3.0.2
+    environment: &id003 {}
+    labels:
+      com.ndl.original_name: database
+      com.ndl.managed: 'true'
+    ports: &id004
+    - '5432'
+  database-2:
+    image: postgres:13
+    container_name: database-2
+    hostname: database-2
+    networks:
+      data_net:
+        ipv4_address: 10.3.0.3
+    environment: *id003
+    labels:
+      com.ndl.original_name: database
+      com.ndl.managed: 'true'
+    ports: *id004
+  database-3:
+    image: postgres:13
+    container_name: database-3
+    hostname: database-3
+    networks:
+      data_net:
+        ipv4_address: 10.3.0.4
+    environment: *id003
+    labels:
+      com.ndl.original_name: database
+      com.ndl.managed: 'true'
+    ports: *id004
+  database-4:
+    image: postgres:13
+    container_name: database-4
+    hostname: database-4
+    networks:
+      data_net:
+        ipv4_address: 10.3.0.5
+    environment: *id003
+    labels:
+      com.ndl.original_name: database
+      com.ndl.managed: 'true'
+    ports: *id004
+  database-5:
+    image: postgres:13
+    container_name: database-5
+    hostname: database-5
+    networks:
+      data_net:
+        ipv4_address: 10.3.0.6
+    environment: *id003
+    labels:
+      com.ndl.original_name: database
+      com.ndl.managed: 'true'
+    ports: *id004
+  database-6:
+    image: postgres:13
+    container_name: database-6
+    hostname: database-6
+    networks:
+      data_net:
+        ipv4_address: 10.3.0.7
+    environment: *id003
+    labels:
+      com.ndl.original_name: database
+      com.ndl.managed: 'true'
+    ports: *id004
+  database-7:
+    image: postgres:13
+    container_name: database-7
+    hostname: database-7
+    networks:
+      data_net:
+        ipv4_address: 10.3.0.8
+    environment: *id003
+    labels:
+      com.ndl.original_name: database
+      com.ndl.managed: 'true'
+    ports: *id004
+  database-8:
+    image: postgres:13
+    container_name: database-8
+    hostname: database-8
+    networks:
+      data_net:
+        ipv4_address: 10.3.0.9
+    environment: *id003
+    labels:
+      com.ndl.original_name: database
+      com.ndl.managed: 'true'
+    ports: *id004
+  database-9:
+    image: postgres:13
+    container_name: database-9
+    hostname: database-9
+    networks:
+      data_net:
+        ipv4_address: 10.3.0.10
+    environment: *id003
+    labels:
+      com.ndl.original_name: database
+      com.ndl.managed: 'true'
+    ports: *id004
+  database-10:
+    image: postgres:13
+    container_name: database-10
+    hostname: database-10
+    networks:
+      data_net:
+        ipv4_address: 10.3.0.11
+    environment: *id003
+    labels:
+      com.ndl.original_name: database
+      com.ndl.managed: 'true'
+    ports: *id004
+  database-11:
+    image: postgres:13
+    container_name: database-11
+    hostname: database-11
+    networks:
+      data_net:
+        ipv4_address: 10.3.0.12
+    environment: *id003
+    labels:
+      com.ndl.original_name: database
+      com.ndl.managed: 'true'
+    ports: *id004
+  database-12:
+    image: postgres:13
+    container_name: database-12
+    hostname: database-12
+    networks:
+      data_net:
+        ipv4_address: 10.3.0.13
+    environment: *id003
+    labels:
+      com.ndl.original_name: database
+      com.ndl.managed: 'true'
+    ports: *id004
+  database-13:
+    image: postgres:13
+    container_name: database-13
+    hostname: database-13
+    networks:
+      data_net:
+        ipv4_address: 10.3.0.14
+    environment: *id003
+    labels:
+      com.ndl.original_name: database
+      com.ndl.managed: 'true'
+    ports: *id004
+  database-14:
+    image: postgres:13
+    container_name: database-14
+    hostname: database-14
+    networks:
+      data_net:
+        ipv4_address: 10.3.0.15
+    environment: *id003
+    labels:
+      com.ndl.original_name: database
+      com.ndl.managed: 'true'
+    ports: *id004
+  database-15:
+    image: postgres:13
+    container_name: database-15
+    hostname: database-15
+    networks:
+      data_net:
+        ipv4_address: 10.3.0.16
+    environment: *id003
+    labels:
+      com.ndl.original_name: database
+      com.ndl.managed: 'true'
+    ports: *id004
+  database-16:
+    image: postgres:13
+    container_name: database-16
+    hostname: database-16
+    networks:
+      data_net:
+        ipv4_address: 10.3.0.17
+    environment: *id003
+    labels:
+      com.ndl.original_name: database
+      com.ndl.managed: 'true'
+    ports: *id004
+  database-17:
+    image: postgres:13
+    container_name: database-17
+    hostname: database-17
+    networks:
+      data_net:
+        ipv4_address: 10.3.0.18
+    environment: *id003
+    labels:
+      com.ndl.original_name: database
+      com.ndl.managed: 'true'
+    ports: *id004
+  database-18:
+    image: postgres:13
+    container_name: database-18
+    hostname: database-18
+    networks:
+      data_net:
+        ipv4_address: 10.3.0.19
+    environment: *id003
+    labels:
+      com.ndl.original_name: database
+      com.ndl.managed: 'true'
+    ports: *id004
+  database-19:
+    image: postgres:13
+    container_name: database-19
+    hostname: database-19
+    networks:
+      data_net:
+        ipv4_address: 10.3.0.20
+    environment: *id003
+    labels:
+      com.ndl.original_name: database
+      com.ndl.managed: 'true'
+    ports: *id004
+  database-20:
+    image: postgres:13
+    container_name: database-20
+    hostname: database-20
+    networks:
+      data_net:
+        ipv4_address: 10.3.0.21
+    environment: *id003
+    labels:
+      com.ndl.original_name: database
+      com.ndl.managed: 'true'
+    ports: *id004
+  database-21:
+    image: postgres:13
+    container_name: database-21
+    hostname: database-21
+    networks:
+      data_net:
+        ipv4_address: 10.3.0.22
+    environment: *id003
+    labels:
+      com.ndl.original_name: database
+      com.ndl.managed: 'true'
+    ports: *id004
+  database-22:
+    image: postgres:13
+    container_name: database-22
+    hostname: database-22
+    networks:
+      data_net:
+        ipv4_address: 10.3.0.23
+    environment: *id003
+    labels:
+      com.ndl.original_name: database
+      com.ndl.managed: 'true'
+    ports: *id004
+  database-23:
+    image: postgres:13
+    container_name: database-23
+    hostname: database-23
+    networks:
+      data_net:
+        ipv4_address: 10.3.0.24
+    environment: *id003
+    labels:
+      com.ndl.original_name: database
+      com.ndl.managed: 'true'
+    ports: *id004
+  database-24:
+    image: postgres:13
+    container_name: database-24
+    hostname: database-24
+    networks:
+      data_net:
+        ipv4_address: 10.3.0.25
+    environment: *id003
+    labels:
+      com.ndl.original_name: database
+      com.ndl.managed: 'true'
+    ports: *id004
+  database-25:
+    image: postgres:13
+    container_name: database-25
+    hostname: database-25
+    networks:
+      data_net:
+        ipv4_address: 10.3.0.26
+    environment: *id003
+    labels:
+      com.ndl.original_name: database
+      com.ndl.managed: 'true'
+    ports: *id004
+  database-26:
+    image: postgres:13
+    container_name: database-26
+    hostname: database-26
+    networks:
+      data_net:
+        ipv4_address: 10.3.0.27
+    environment: *id003
+    labels:
+      com.ndl.original_name: database
+      com.ndl.managed: 'true'
+    ports: *id004
+  database-27:
+    image: postgres:13
+    container_name: database-27
+    hostname: database-27
+    networks:
+      data_net:
+        ipv4_address: 10.3.0.28
+    environment: *id003
+    labels:
+      com.ndl.original_name: database
+      com.ndl.managed: 'true'
+    ports: *id004
+  database-28:
+    image: postgres:13
+    container_name: database-28
+    hostname: database-28
+    networks:
+      data_net:
+        ipv4_address: 10.3.0.29
+    environment: *id003
+    labels:
+      com.ndl.original_name: database
+      com.ndl.managed: 'true'
+    ports: *id004
+  database-29:
+    image: postgres:13
+    container_name: database-29
+    hostname: database-29
+    networks:
+      data_net:
+        ipv4_address: 10.3.0.30
+    environment: *id003
+    labels:
+      com.ndl.original_name: database
+      com.ndl.managed: 'true'
+    ports: *id004
+  database-30:
+    image: postgres:13
+    container_name: database-30
+    hostname: database-30
+    networks:
+      data_net:
+        ipv4_address: 10.3.0.31
+    environment: *id003
+    labels:
+      com.ndl.original_name: database
+      com.ndl.managed: 'true'
+    ports: *id004
+  database-31:
+    image: postgres:13
+    container_name: database-31
+    hostname: database-31
+    networks:
+      data_net:
+        ipv4_address: 10.3.0.32
+    environment: *id003
+    labels:
+      com.ndl.original_name: database
+      com.ndl.managed: 'true'
+    ports: *id004
+  database-32:
+    image: postgres:13
+    container_name: database-32
+    hostname: database-32
+    networks:
+      data_net:
+        ipv4_address: 10.3.0.33
+    environment: *id003
+    labels:
+      com.ndl.original_name: database
+      com.ndl.managed: 'true'
+    ports: *id004
+  database-33:
+    image: postgres:13
+    container_name: database-33
+    hostname: database-33
+    networks:
+      data_net:
+        ipv4_address: 10.3.0.34
+    environment: *id003
+    labels:
+      com.ndl.original_name: database
+      com.ndl.managed: 'true'
+    ports: *id004
+  database-34:
+    image: postgres:13
+    container_name: database-34
+    hostname: database-34
+    networks:
+      data_net:
+        ipv4_address: 10.3.0.35
+    environment: *id003
+    labels:
+      com.ndl.original_name: database
+      com.ndl.managed: 'true'
+    ports: *id004
+  database-35:
+    image: postgres:13
+    container_name: database-35
+    hostname: database-35
+    networks:
+      data_net:
+        ipv4_address: 10.3.0.36
+    environment: *id003
+    labels:
+      com.ndl.original_name: database
+      com.ndl.managed: 'true'
+    ports: *id004
+  database-36:
+    image: postgres:13
+    container_name: database-36
+    hostname: database-36
+    networks:
+      data_net:
+        ipv4_address: 10.3.0.37
+    environment: *id003
+    labels:
+      com.ndl.original_name: database
+      com.ndl.managed: 'true'
+    ports: *id004
+  database-37:
+    image: postgres:13
+    container_name: database-37
+    hostname: database-37
+    networks:
+      data_net:
+        ipv4_address: 10.3.0.38
+    environment: *id003
+    labels:
+      com.ndl.original_name: database
+      com.ndl.managed: 'true'
+    ports: *id004
+  database-38:
+    image: postgres:13
+    container_name: database-38
+    hostname: database-38
+    networks:
+      data_net:
+        ipv4_address: 10.3.0.39
+    environment: *id003
+    labels:
+      com.ndl.original_name: database
+      com.ndl.managed: 'true'
+    ports: *id004
+  database-39:
+    image: postgres:13
+    container_name: database-39
+    hostname: database-39
+    networks:
+      data_net:
+        ipv4_address: 10.3.0.40
+    environment: *id003
+    labels:
+      com.ndl.original_name: database
+      com.ndl.managed: 'true'
+    ports: *id004
+  database-40:
+    image: postgres:13
+    container_name: database-40
+    hostname: database-40
+    networks:
+      data_net:
+        ipv4_address: 10.3.0.41
+    environment: *id003
+    labels:
+      com.ndl.original_name: database
+      com.ndl.managed: 'true'
+    ports: *id004
+  database-41:
+    image: postgres:13
+    container_name: database-41
+    hostname: database-41
+    networks:
+      data_net:
+        ipv4_address: 10.3.0.42
+    environment: *id003
+    labels:
+      com.ndl.original_name: database
+      com.ndl.managed: 'true'
+    ports: *id004
+  database-42:
+    image: postgres:13
+    container_name: database-42
+    hostname: database-42
+    networks:
+      data_net:
+        ipv4_address: 10.3.0.43
+    environment: *id003
+    labels:
+      com.ndl.original_name: database
+      com.ndl.managed: 'true'
+    ports: *id004
+  database-43:
+    image: postgres:13
+    container_name: database-43
+    hostname: database-43
+    networks:
+      data_net:
+        ipv4_address: 10.3.0.44
+    environment: *id003
+    labels:
+      com.ndl.original_name: database
+      com.ndl.managed: 'true'
+    ports: *id004
+  database-44:
+    image: postgres:13
+    container_name: database-44
+    hostname: database-44
+    networks:
+      data_net:
+        ipv4_address: 10.3.0.45
+    environment: *id003
+    labels:
+      com.ndl.original_name: database
+      com.ndl.managed: 'true'
+    ports: *id004
+  database-45:
+    image: postgres:13
+    container_name: database-45
+    hostname: database-45
+    networks:
+      data_net:
+        ipv4_address: 10.3.0.46
+    environment: *id003
+    labels:
+      com.ndl.original_name: database
+      com.ndl.managed: 'true'
+    ports: *id004
+  database-46:
+    image: postgres:13
+    container_name: database-46
+    hostname: database-46
+    networks:
+      data_net:
+        ipv4_address: 10.3.0.47
+    environment: *id003
+    labels:
+      com.ndl.original_name: database
+      com.ndl.managed: 'true'
+    ports: *id004
+  database-47:
+    image: postgres:13
+    container_name: database-47
+    hostname: database-47
+    networks:
+      data_net:
+        ipv4_address: 10.3.0.48
+    environment: *id003
+    labels:
+      com.ndl.original_name: database
+      com.ndl.managed: 'true'
+    ports: *id004
+  database-48:
+    image: postgres:13
+    container_name: database-48
+    hostname: database-48
+    networks:
+      data_net:
+        ipv4_address: 10.3.0.49
+    environment: *id003
+    labels:
+      com.ndl.original_name: database
+      com.ndl.managed: 'true'
+    ports: *id004

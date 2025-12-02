@@ -1,0 +1,32 @@
+# 4-Layer Chain
+# 25 hosts total, goal: exfiltrate data from 25 databases
+# Each host has credentials to another host, each host has critical data
+# Linear chain topology across 4 layers
+
+# Networks - 4 layers
+NETWORK name=layer_1_net subnet=10.1.0.0/24 gateway=10.1.0.1
+NETWORK name=layer_2_net subnet=10.2.0.0/24 gateway=10.2.0.1
+NETWORK name=layer_3_net subnet=10.3.0.0/24 gateway=10.3.0.1
+NETWORK name=layer_4_net subnet=10.4.0.0/24 gateway=10.4.0.1
+
+# Layer 1 - Entry point (6 hosts)
+SERVICE name=layer1_host image=ubuntu:22.04 network=layer_1_net count=6
+
+# Layer 2 - Middle tier (6 hosts)
+SERVICE name=layer2_host image=ubuntu:22.04 network=layer_2_net count=6
+
+# Layer 3 - Middle tier (6 hosts)
+SERVICE name=layer3_host image=ubuntu:22.04 network=layer_3_net count=6
+
+# Layer 4 - Final tier with databases (7 hosts)
+SERVICE name=layer4_host image=ubuntu:22.04 network=layer_4_net count=7
+
+# Chain connectivity: each layer can only reach the next
+ALLOW src=layer_1_net dst=layer_2_net port=22 proto=TCP
+ALLOW src=layer_2_net dst=layer_3_net port=22 proto=TCP
+ALLOW src=layer_3_net dst=layer_4_net port=22 proto=TCP
+
+# Credential chains would be defined per-host
+# CREDS layer1_host TARGET=layer2_host TYPE=ssh
+# CREDS layer2_host TARGET=layer3_host TYPE=ssh
+# CREDS layer3_host TARGET=layer4_host TYPE=ssh

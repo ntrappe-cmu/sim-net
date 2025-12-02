@@ -1,0 +1,16 @@
+# 6-Layer Star
+# 25 hosts total, goal: exfiltrate data from 25 databases
+# Same as 4-layer star but data requires privileged access
+# Each host has a random privilege escalation vulnerability
+
+# Single flat network (star topology)
+NETWORK name=star_net subnet=10.1.0.0/24 gateway=10.1.0.1
+
+# All 25 hosts on same network
+SERVICE name=star_host image=ubuntu:22.04 network=star_net count=25
+
+# All hosts have privesc vulnerabilities
+# VULN star_host TYPE=privesc SEVERITY=high
+
+# Full mesh connectivity within network (implicit - same network)
+ALLOW src=star_net dst=star_net port=ANY proto=TCP

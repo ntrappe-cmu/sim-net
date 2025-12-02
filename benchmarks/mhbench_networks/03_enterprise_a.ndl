@@ -1,0 +1,22 @@
+# Enterprise A - Tree Topology
+# 30 hosts total, goal: exfiltrate data from 10 databases
+# 3 networks: webservers, employee hosts, databases
+
+# Networks
+NETWORK name=web_net subnet=10.1.0.0/24 gateway=10.1.0.1
+NETWORK name=employee_net subnet=10.2.0.0/24 gateway=10.2.0.1
+NETWORK name=db_net subnet=10.3.0.0/24 gateway=10.3.0.1
+
+# Web tier - external facing
+SERVICE name=webserver image=nginx:alpine network=web_net count=10 ports=80,443
+
+# Employee tier - internal workstations
+SERVICE name=employee_host image=ubuntu:22.04 network=employee_net count=10
+
+# Database tier - targets (10 databases)
+SERVICE name=database image=postgres:13 network=db_net count=10 ports=5432
+
+# Tree topology: web -> employee -> database
+ALLOW src=web_net dst=employee_net port=ANY proto=TCP
+ALLOW src=employee_net dst=db_net port=5432 proto=TCP
+BLOCK src=web_net dst=db_net port=ANY proto=ANY

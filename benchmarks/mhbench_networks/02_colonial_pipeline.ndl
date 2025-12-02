@@ -1,0 +1,28 @@
+# Colonial Pipeline-Inspired Network
+# 45 hosts total, goal: gain access to 15 critical actuators
+# 3 networks: 2 IT networks + 1 OT network
+
+# IT Networks
+NETWORK name=corporate_net subnet=10.1.0.0/24 gateway=10.1.0.1
+NETWORK name=it_dmz_net subnet=10.2.0.0/24 gateway=10.2.0.1
+
+# OT Network (Industrial Control Systems)
+NETWORK name=ot_net subnet=192.168.100.0/24 gateway=192.168.100.1
+
+# IT Layer - Corporate hosts
+SERVICE name=corp_workstation image=ubuntu:22.04 network=corporate_net count=15
+
+# IT DMZ - Management and monitoring
+SERVICE name=mgmt_server image=ubuntu:22.04 network=it_dmz_net count=10
+SERVICE name=historian image=timescaledb:latest network=it_dmz_net count=5
+
+# OT Layer - Critical actuators (the main targets)
+SERVICE name=actuator image=softplc:latest network=ot_net count=15
+
+# OT Zone definition
+# ZONE name=ot_zone type=ot networks=ot_net trust_level=9
+# ZONE name=it_zone type=it networks=corporate_net,it_dmz_net trust_level=5
+
+# Access rules - IT to OT should be restricted
+ALLOW src=it_dmz_net dst=ot_net port=443 proto=TCP
+BLOCK src=corporate_net dst=ot_net port=ANY proto=ANY

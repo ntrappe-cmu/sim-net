@@ -1,0 +1,310 @@
+version: '3.8'
+networks:
+  layer_1_net:
+    driver: bridge
+    ipam:
+      config:
+      - subnet: 10.1.0.0/24
+        gateway: 10.1.0.1
+    driver_opts:
+      com.docker.network.bridge.name: layer_1_net
+  layer_2_net:
+    driver: bridge
+    ipam:
+      config:
+      - subnet: 10.2.0.0/24
+        gateway: 10.2.0.1
+    driver_opts:
+      com.docker.network.bridge.name: layer_2_net
+  layer_3_net:
+    driver: bridge
+    ipam:
+      config:
+      - subnet: 10.3.0.0/24
+        gateway: 10.3.0.1
+    driver_opts:
+      com.docker.network.bridge.name: layer_3_net
+  layer_4_net:
+    driver: bridge
+    ipam:
+      config:
+      - subnet: 10.4.0.0/24
+        gateway: 10.4.0.1
+    driver_opts:
+      com.docker.network.bridge.name: layer_4_net
+services:
+  layer1_host-1:
+    image: ubuntu:22.04
+    container_name: layer1_host-1
+    hostname: layer1_host-1
+    networks:
+      layer_1_net:
+        ipv4_address: 10.1.0.2
+    environment: &id001 {}
+    labels:
+      com.ndl.original_name: layer1_host
+      com.ndl.managed: 'true'
+  layer1_host-2:
+    image: ubuntu:22.04
+    container_name: layer1_host-2
+    hostname: layer1_host-2
+    networks:
+      layer_1_net:
+        ipv4_address: 10.1.0.3
+    environment: *id001
+    labels:
+      com.ndl.original_name: layer1_host
+      com.ndl.managed: 'true'
+  layer1_host-3:
+    image: ubuntu:22.04
+    container_name: layer1_host-3
+    hostname: layer1_host-3
+    networks:
+      layer_1_net:
+        ipv4_address: 10.1.0.4
+    environment: *id001
+    labels:
+      com.ndl.original_name: layer1_host
+      com.ndl.managed: 'true'
+  layer1_host-4:
+    image: ubuntu:22.04
+    container_name: layer1_host-4
+    hostname: layer1_host-4
+    networks:
+      layer_1_net:
+        ipv4_address: 10.1.0.5
+    environment: *id001
+    labels:
+      com.ndl.original_name: layer1_host
+      com.ndl.managed: 'true'
+  layer1_host-5:
+    image: ubuntu:22.04
+    container_name: layer1_host-5
+    hostname: layer1_host-5
+    networks:
+      layer_1_net:
+        ipv4_address: 10.1.0.6
+    environment: *id001
+    labels:
+      com.ndl.original_name: layer1_host
+      com.ndl.managed: 'true'
+  layer1_host-6:
+    image: ubuntu:22.04
+    container_name: layer1_host-6
+    hostname: layer1_host-6
+    networks:
+      layer_1_net:
+        ipv4_address: 10.1.0.7
+    environment: *id001
+    labels:
+      com.ndl.original_name: layer1_host
+      com.ndl.managed: 'true'
+  layer2_host-1:
+    image: ubuntu:22.04
+    container_name: layer2_host-1
+    hostname: layer2_host-1
+    networks:
+      layer_2_net:
+        ipv4_address: 10.2.0.2
+    environment: &id002 {}
+    labels:
+      com.ndl.original_name: layer2_host
+      com.ndl.managed: 'true'
+  layer2_host-2:
+    image: ubuntu:22.04
+    container_name: layer2_host-2
+    hostname: layer2_host-2
+    networks:
+      layer_2_net:
+        ipv4_address: 10.2.0.3
+    environment: *id002
+    labels:
+      com.ndl.original_name: layer2_host
+      com.ndl.managed: 'true'
+  layer2_host-3:
+    image: ubuntu:22.04
+    container_name: layer2_host-3
+    hostname: layer2_host-3
+    networks:
+      layer_2_net:
+        ipv4_address: 10.2.0.4
+    environment: *id002
+    labels:
+      com.ndl.original_name: layer2_host
+      com.ndl.managed: 'true'
+  layer2_host-4:
+    image: ubuntu:22.04
+    container_name: layer2_host-4
+    hostname: layer2_host-4
+    networks:
+      layer_2_net:
+        ipv4_address: 10.2.0.5
+    environment: *id002
+    labels:
+      com.ndl.original_name: layer2_host
+      com.ndl.managed: 'true'
+  layer2_host-5:
+    image: ubuntu:22.04
+    container_name: layer2_host-5
+    hostname: layer2_host-5
+    networks:
+      layer_2_net:
+        ipv4_address: 10.2.0.6
+    environment: *id002
+    labels:
+      com.ndl.original_name: layer2_host
+      com.ndl.managed: 'true'
+  layer2_host-6:
+    image: ubuntu:22.04
+    container_name: layer2_host-6
+    hostname: layer2_host-6
+    networks:
+      layer_2_net:
+        ipv4_address: 10.2.0.7
+    environment: *id002
+    labels:
+      com.ndl.original_name: layer2_host
+      com.ndl.managed: 'true'
+  layer3_host-1:
+    image: ubuntu:22.04
+    container_name: layer3_host-1
+    hostname: layer3_host-1
+    networks:
+      layer_3_net:
+        ipv4_address: 10.3.0.2
+    environment: &id003 {}
+    labels:
+      com.ndl.original_name: layer3_host
+      com.ndl.managed: 'true'
+  layer3_host-2:
+    image: ubuntu:22.04
+    container_name: layer3_host-2
+    hostname: layer3_host-2
+    networks:
+      layer_3_net:
+        ipv4_address: 10.3.0.3
+    environment: *id003
+    labels:
+      com.ndl.original_name: layer3_host
+      com.ndl.managed: 'true'
+  layer3_host-3:
+    image: ubuntu:22.04
+    container_name: layer3_host-3
+    hostname: layer3_host-3
+    networks:
+      layer_3_net:
+        ipv4_address: 10.3.0.4
+    environment: *id003
+    labels:
+      com.ndl.original_name: layer3_host
+      com.ndl.managed: 'true'
+  layer3_host-4:
+    image: ubuntu:22.04
+    container_name: layer3_host-4
+    hostname: layer3_host-4
+    networks:
+      layer_3_net:
+        ipv4_address: 10.3.0.5
+    environment: *id003
+    labels:
+      com.ndl.original_name: layer3_host
+      com.ndl.managed: 'true'
+  layer3_host-5:
+    image: ubuntu:22.04
+    container_name: layer3_host-5
+    hostname: layer3_host-5
+    networks:
+      layer_3_net:
+        ipv4_address: 10.3.0.6
+    environment: *id003
+    labels:
+      com.ndl.original_name: layer3_host
+      com.ndl.managed: 'true'
+  layer3_host-6:
+    image: ubuntu:22.04
+    container_name: layer3_host-6
+    hostname: layer3_host-6
+    networks:
+      layer_3_net:
+        ipv4_address: 10.3.0.7
+    environment: *id003
+    labels:
+      com.ndl.original_name: layer3_host
+      com.ndl.managed: 'true'
+  layer4_host-1:
+    image: ubuntu:22.04
+    container_name: layer4_host-1
+    hostname: layer4_host-1
+    networks:
+      layer_4_net:
+        ipv4_address: 10.4.0.2
+    environment: &id004 {}
+    labels:
+      com.ndl.original_name: layer4_host
+      com.ndl.managed: 'true'
+  layer4_host-2:
+    image: ubuntu:22.04
+    container_name: layer4_host-2
+    hostname: layer4_host-2
+    networks:
+      layer_4_net:
+        ipv4_address: 10.4.0.3
+    environment: *id004
+    labels:
+      com.ndl.original_name: layer4_host
+      com.ndl.managed: 'true'
+  layer4_host-3:
+    image: ubuntu:22.04
+    container_name: layer4_host-3
+    hostname: layer4_host-3
+    networks:
+      layer_4_net:
+        ipv4_address: 10.4.0.4
+    environment: *id004
+    labels:
+      com.ndl.original_name: layer4_host
+      com.ndl.managed: 'true'
+  layer4_host-4:
+    image: ubuntu:22.04
+    container_name: layer4_host-4
+    hostname: layer4_host-4
+    networks:
+      layer_4_net:
+        ipv4_address: 10.4.0.5
+    environment: *id004
+    labels:
+      com.ndl.original_name: layer4_host
+      com.ndl.managed: 'true'
+  layer4_host-5:
+    image: ubuntu:22.04
+    container_name: layer4_host-5
+    hostname: layer4_host-5
+    networks:
+      layer_4_net:
+        ipv4_address: 10.4.0.6
+    environment: *id004
+    labels:
+      com.ndl.original_name: layer4_host
+      com.ndl.managed: 'true'
+  layer4_host-6:
+    image: ubuntu:22.04
+    container_name: layer4_host-6
+    hostname: layer4_host-6
+    networks:
+      layer_4_net:
+        ipv4_address: 10.4.0.7
+    environment: *id004
+    labels:
+      com.ndl.original_name: layer4_host
+      com.ndl.managed: 'true'
+  layer4_host-7:
+    image: ubuntu:22.04
+    container_name: layer4_host-7
+    hostname: layer4_host-7
+    networks:
+      layer_4_net:
+        ipv4_address: 10.4.0.8
+    environment: *id004
+    labels:
+      com.ndl.original_name: layer4_host
+      com.ndl.managed: 'true'
