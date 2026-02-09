@@ -11,18 +11,24 @@ SIM-NET features an AI Architect mode powered by Claude, allowing you to build n
 ### AI Architect (*)
 The easiest way to start. Describe what you want, and the LLM writes the NDL for you.
 
-1. **Navigate to the engine directory:**
+1. **Dependencies:**
+```bash
+python3 -m pip install anthropic PyYAML
+export ANTHROPIC_API_KEY=<add key or use GitHub Actions instead>
+```
+
+2. **Navigate to the engine directory:**
 
 ```bash
 cd ndl_engine
 ```
 
-2. **Run the AI CLI:**
+3. **Run the AI CLI:**
 ```bash
-python3 ndl_llm_cli.py
+python3 main.py
 ```
 
-3. **Example Interaction:**
+4. **Example Interaction:**
 > 4 Layer chain. Each host has credentials to another host in the network. Each host has critical data. 25 hosts.
 
 The system will:
